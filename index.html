@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -283,6 +284,20 @@
 
             
         }
+
+                .invisible-table {
+        border-collapse: collapse; /* clean spacing */
+        border: none;              /* no table border */
+        width: 100%;               /* optional: make it full width */
+        }
+
+        .invisible-table th,
+        .invisible-table td {
+        border: none;              /* no cell borders */
+        background: transparent;   /* no background */
+        padding: 0.5em;            /* keep some spacing */
+        }
+
 
         .em-strong-container {
             background: transparent;
@@ -724,21 +739,28 @@
 
         <!-- IMAGE after Page 7 -->
             <div class="content image-content">
-                <img src="/otplogo-th.png" alt="Illustration 7"><br>
-                <p>อพระคัมภีร์อ้างอิงมาจาก ฉบับมาตรฐาน 2011 สมาคมพระคริสตธรรมไทย</br>เรียบเรียงโดยได้รับการอนุญาตจาก J.D. Crowley และเง็ต ซาริธ</br>© สงวนลิขสิทธิ์ 2025</p>
+                            <table class="invisible-table">
+            <tr><td><div class="center-container"><img src="/otplogo.png" alt="OTP Logo"></div></td></tr>
+                <tr><td><p><div class="center-container">อพระคัมภีร์อ้างอิงมาจาก ฉบับมาตรฐาน 2011 สมาคมพระคริสตธรรมไทย</br>เรียบเรียงโดยได้รับการอนุญาตจาก J.D. Crowley และเง็ต ซาริธ</br>© สงวนลิขสิทธิ์ 2025</div></p></td></tr>
+
+            </tr>
+            </table>
+
             </div>
         </div>
         <div class="content" data-lang="km">
 
             <!-- IMAGE after Page 7 -->
             <div class="content image-content">
-                <img src="/otplogo.png" alt="Illustration 7"><br>
-                <p>ខគម្ពីរដកស្រង់ចេញពី ពគប ១៩៥៤ សមាគមព្រះគម្ពីរកម្ពុចា</br>កែសម្រួលដោយមានការអនុញ្ញាតពី J.D. Crowley និង ង៉ែត សារិទ្ធ</br>© រក្សាសិទ្ធិ ២០២៥ </p>
+                <table class="invisible-table">
+            <tr><td><div class="center-container"><img src="/otplogo.png" alt="OTP Logo"></div></td></tr>
+                <tr><td><p><div class="center-container">ខគម្ពីរដកស្រង់ចេញពី ពគប ១៩៥៤ សមាគមព្រះគម្ពីរកម្ពុចា</br>កែសម្រួលដោយមានការអនុញ្ញាតពី J.D. Crowley និង ង៉ែត សារិទ្ធ</br>© រក្សាសិទ្ធិ ២០២៥ </div></p></td></tr>
+
+            </tr>
+            </table>
             </div>
         </div>
     </div>
-</div>
-
     <!-- Navigation -->
     <div class="navigation">
         <button class="nav-btn" id="prevBtn">← ก่อนหน้า</button>
