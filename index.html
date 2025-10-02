@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>មានផ្លូវតែពីរ / มีเพียงสองทาง</title>
+    <title>มีเพียงสองทาง</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -906,6 +906,11 @@ function getLangFromQuery() {
                 this.langBtns.forEach(btn => {
                     btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
                 });
+                if (lang === 'km') {
+                    document.title = 'មានផ្លូវតែពីរ';
+                } else {
+                    document.title = 'มีเพียงสองทาง';
+                }
                 this.updateLanguageDisplay();
                 this.updateNavigationText();
             }
