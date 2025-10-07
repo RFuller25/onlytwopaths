@@ -1060,6 +1060,9 @@ function getLangFromQuery() {
             }
 
             goToPage(pageIndex) {
+                const audioControls = document.getElementById('audioControls');
+                audioControls.style.display = 'flex';
+
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
                 this.isTransitioning = true;
                 this.pages[this.currentPage].classList.remove('active');
