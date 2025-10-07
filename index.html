@@ -59,6 +59,26 @@
   min-width: 40px;
 }
 
+/* Skip buttons */
+.repeat-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--background-color);
+  border-radius: 9999px;
+  background: var(--text-color);
+  color: var(--background-color);
+  font: 500 0.85rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+.repeat-btn:hover {
+  transform: translateY(-1px);
+}
+
+
 /* Hover highlight */
 .play-audio-btn:hover,
 .skip-btn:hover {
@@ -424,6 +444,8 @@
     <!-- Floating Audio Controls -->
     <div class="audio-controls-container" id="audioControls" style="display: none;">
         <button class="skip-btn" id="skipBackBtn">← </button>
+        <button class="restart-btn" id="restartBtn">⟲</button>
+
         <button class="play-audio-btn" id="globalPlayBtn">เล่นเสียง</button>
         <button class="skip-btn" id="skipForwardBtn"> →</button>
     </div>
@@ -847,6 +869,8 @@
     const globalPlayBtn = document.getElementById('globalPlayBtn');
     const skipBackBtn = document.getElementById('skipBackBtn');
     const skipForwardBtn = document.getElementById('skipForwardBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
     const audioControls = document.getElementById('audioControls');
     let activeBtn = null;
     let currentLang = 'th';
@@ -932,6 +956,14 @@
         player.currentTime = Math.min(player.duration, player.currentTime + 15);
       }
     });
+
+        // Skip forward 15 seconds
+    restartBtn.addEventListener('click', () => {
+      if (player.src) {
+        player.currentTime = 0;
+      }
+    });
+
 
     // When audio ends or is paused externally, clear UI
     player.addEventListener('ended', () => {
@@ -1041,6 +1073,10 @@ function getLangFromQuery() {
                 }
                 this.updateLanguageDisplay();
                 this.updateNavigationText();
+                const player = document.getElementById('globalAudio');
+                player.pause();
+                player.currentTime = 0;
+
                 // Dispatch language change event for audio controls
                 document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
             }
@@ -1065,6 +1101,9 @@ function getLangFromQuery() {
             goToPage(pageIndex) {
                 const audioControls = document.getElementById('audioControls');
                 audioControls.style.display = 'none';
+                const player = document.getElementById('globalAudio');
+                player.pause();
+                player.currentTime = 0;
 
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
                 this.isTransitioning = true;
@@ -1109,9 +1148,6 @@ function getLangFromQuery() {
             const pag = new LogicalPagination(langFromQuery || 'th'); // Thai fallback
             pag.switchLanguage(langFromQuery || 'th');
         });
-
-
-
     </script>
 </body>
 </html>
