@@ -170,7 +170,7 @@
         .lang-btn:hover:not(.active) { background: var(--text-color); color: var(--background-color) }
         .lang-btn.page:not(.active) { opacity: 0.5; }
 
-        .page-container { position: relative; width: 100%; height: 100vh; overflow-y: auto; }
+        .page-container { position: relative; width: 100vw; height: 100vh; overflow-y: auto; }
 
         .page {
             position: absolute;
@@ -179,7 +179,7 @@
             height: 100%;
             width: 100%;
             min-height: 100vh;
-            max-width: 100%;
+            max-width: 100vw;
             overflow-y: auto;
             display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
             padding: 2rem; opacity: 0; transform: translateX(100px) scale(0.95);
@@ -197,7 +197,7 @@
         .page:not(.active) { pointer-events: none; }
 
         .content {
-            max-width: 800px; width: 100%; text-align: left;
+            max-width: 800px; width: 100vw; text-align: left;
             animation: fadeInUp 0.8s ease-out 0.2s both;
             padding-bottom: 6rem; min-height: fit-content;
             align-items: center;
