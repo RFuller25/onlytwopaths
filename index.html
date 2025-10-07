@@ -192,7 +192,7 @@
         h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1.5rem; color: var(--text-color); font-weight: 700; position: relative; }
         h1::after {
             content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-            width: 60px; height: 3px; background: var(--background-color)); border-radius: 2px;
+            width: 60px; height: 3px; background: var(--background-color); border-radius: 2px;
         }
 
         /* NEW: styled H2 container */
@@ -272,8 +272,7 @@
             .content.image-content { width: 90vw; height: auto; min-height: calc(100vh - 6rem); justify-content: center; align-items: center; }
             .navigation { bottom: 1rem; gap: 0.5rem; position: fixed; z-index: 1001; }
             .nav-btn { padding: 12px 20px; font-size: 0.9rem; font-weight: 600; }
-            table { font-size: 0.85rem; margin: 1rem 0; }
-            th, td { padding: 0.6rem 0.4rem; }
+
             h1 { margin-bottom: 1rem; text-align: center; }
             h2, h3 { text-align: center; margin-bottom: 0.8rem; }
             p { text-align: left; margin-bottom: 1rem; }
@@ -349,7 +348,7 @@
                 .invisible-table {
         border-collapse: collapse; /* clean spacing */
         border: none;              /* no table border */
-        width: 100%;               /* optional: make it full width */
+        width: 99%;               /* optional: make it full width */
         }
 
         .invisible-table th,
@@ -357,6 +356,9 @@
         border: none;              /* no cell borders */
         background: transparent;   /* no background */
         padding: 0.5em;            /* keep some spacing */
+        word-break: break-word;
+        white-space: normal;
+
         }
 
 
