@@ -7,6 +7,24 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Floating audio controls container */
+.audio-controls-container {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--text-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* Base style matches your rounded, subtle, glassy aesthetic */
 .play-audio-btn {
   padding: 10px 16px;
@@ -18,18 +36,36 @@
   cursor: pointer;
   transition: var(--transition);
   backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center; /* centers horizontally */
-    align-items: center;     /* centers vertically */
-    align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  white-space: nowrap;
+}
+
+/* Skip buttons */
+.skip-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--background-color);
+  border-radius: 9999px;
+  background: var(--text-color);
+  color: var(--background-color);
+  font: 500 0.85rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
 }
 
 /* Hover highlight */
-.play-audio-btn:hover {
+.play-audio-btn:hover,
+.skip-btn:hover {
   transform: translateY(-1px);
 }
 
-/* Active/playing state — subtle “pressed” look */
+/* Active/playing state — subtle "pressed" look */
 .play-audio-btn.is-playing {
   background: var(--text-color);
   color: var(--background-color);
@@ -37,21 +73,11 @@
   transform: translateY(0);
 }
 
-/* Optional per-page tint using your existing page data attribute */
-.page[data-page="0"] .play-audio-btn:hover { background: #eef2ff; } /* soft indigo tint */
-.page[data-page="1"] .play-audio-btn:hover { background: #ecfeff; } /* soft cyan tint */
-.page[data-page="2"] .play-audio-btn:hover { background: #fef9c3; } /* soft amber tint */
-.page[data-page="3"] .play-audio-btn:hover { background: #fce7f3; } /* soft pink tint */
-.page[data-page="4"] .play-audio-btn:hover { background: #dcfce7; } /* soft green tint */
-.page[data-page="5"] .play-audio-btn:hover { background: #ffe4e6; } /* soft rose tint */
-.page[data-page="6"] .play-audio-btn:hover { background: #e0f2fe; } /* soft sky tint */
-.page[data-page="7"] .play-audio-btn:hover { background: #e0f2fe; } /* soft sky tint */
-
-/* If you’d rather color by language (Thai only) */
-.content[data-lang="th"] .play-audio-btn:hover {
-  background: #8fc0dd;
+/* Disabled state for skip buttons */
+.skip-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
-
 
         :root {
             --text-color: #ffffff;
@@ -131,8 +157,8 @@
             height: 100%;
             width: 100%;
             min-height: 100vh;
+            max-width: 100%;
             overflow-y: auto;
-            overflow-x: hidden;
             display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
             padding: 2rem; opacity: 0; transform: translateX(100px) scale(0.95);
             transition: var(--transition);
@@ -252,6 +278,23 @@
             p { text-align: left; margin-bottom: 1rem; }
             ul, ol { margin: 1rem 0; padding-left: 1.5rem; }
             img { max-height: 60vh; max-height: 60dvh; margin: 1rem 0; }
+
+            .audio-controls-container {
+                top: 4rem;
+                padding: 0.4rem 0.8rem;
+                gap: 0.3rem;
+            }
+            
+            .play-audio-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .skip-btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+                min-width: 35px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -369,10 +412,17 @@
 
 </head>
 <body>
-    <!-- Language Switch -->
+<!-- Language Switch -->
     <div class="language-switch">
         <button class="lang-btn" data-lang="km">ខ្មែរ</button>
         <button class="lang-btn active" data-lang="th">ไทย</button>
+    </div>
+
+    <!-- Floating Audio Controls -->
+    <div class="audio-controls-container" id="audioControls" style="display: none;">
+        <button class="skip-btn" id="skipBackBtn">← 15s</button>
+        <button class="play-audio-btn" id="globalPlayBtn">เล่นเสียง</button>
+        <button class="skip-btn" id="skipForwardBtn">15s →</button>
     </div>
 
 <div class="page-container">
@@ -418,7 +468,7 @@
     <!-- IMAGE after Page 1 -->
     <div class="page" data-page="1-image">
         <div class="content image-content">
-            <img src="/signal-1.jpeg" alt="Illustration 1">
+            <img src="./signal-1.jpeg" alt="Illustration 1">
         </div>
     </div>
 
@@ -463,7 +513,7 @@
     <!-- IMAGE after Page 2 -->
     <div class="page" data-page="2-image">
         <div class="content image-content">
-            <img src="/signal-2.jpeg" alt="Illustration 2">
+            <img src="./signal-2.jpeg" alt="Illustration 2">
         </div>
     </div>
 
@@ -506,7 +556,7 @@
     <!-- IMAGE after Page 3 -->
     <div class="page" data-page="3-image">
         <div class="content image-content">
-            <img src="/signal-3.jpeg" alt="Illustration 3">
+            <img src="./signal-3.jpeg" alt="Illustration 3">
         </div>
     </div>
 
@@ -551,7 +601,7 @@
     <!-- IMAGE after Page 4 -->
     <div class="page" data-page="4-image">
         <div class="content image-content">
-            <img src="/signal-4.jpeg" alt="Illustration 4">
+            <img src="./signal-4.jpeg" alt="Illustration 4">
         </div>
     </div>
 
@@ -593,7 +643,7 @@
     <!-- IMAGE after Page 5 -->
     <div class="page" data-page="5-image">
         <div class="content image-content">
-            <img src="/signal-5.jpeg" alt="Illustration 5">
+            <img src="./signal-5.jpeg" alt="Illustration 5">
         </div>
     </div>
 
@@ -638,7 +688,7 @@
     <!-- IMAGE after Page 6 -->
     <div class="page" data-page="6-image">
         <div class="content image-content">
-            <img src="/signal-6.jpeg" alt="Illustration 6">
+            <img src="./signal-6.jpeg" alt="Illustration 6">
         </div>
     </div>
 
@@ -682,14 +732,14 @@
 
         <!-- IMAGE after Page 7 -->
             <div class="content image-content">
-                <img src="/signal-7.jpeg" alt="Illustration 7">
+                <img src="./signal-7.jpeg" alt="Illustration 7">
             </div>
         </div>
         <div class="content" data-lang="km">
 
             <!-- IMAGE after Page 7 -->
             <div class="content image-content">
-                <img src="/signal-7t.jpeg" alt="Illustration 7">
+                <img src="./signal-7t.jpeg" alt="Illustration 7">
             </div>
         </div>
     </div>
@@ -757,7 +807,7 @@
         <!-- IMAGE after Page 7 -->
             <div class="content image-content">
                             <table class="invisible-table">
-            <tr><td><div class="center-container"><img width="678px" height="395px" src="/otplogo-th.png" alt="OTP Logo"></div></td></tr>
+            <tr><td><div class="center-container"><img width="678px" height="395px" src="./otplogo-th.png" alt="OTP Logo"></div></td></tr>
                 <tr><td><p><div class="center-container">ข้อพระคัมภีร์อ้างอิงมาจาก ฉบับมาตรฐาน 2011 สมาคมพระคริสตธรรมไทย</br>เรียบเรียงโดยได้รับการอนุญาตจาก J.D. Crowley และเง็ต ซาริธ</br>© สงวนลิขสิทธิ์ 2025</div></p></td></tr>
                 <tr><td><p><div class="center-container"><a href="https://www.youtube.com/channel/UCi67UQSVF1upKXawK68U2Rg">หากสนใจรับชมวิดีโออื่นๆ (ยูทูป)</a></div></p></td></tr>
 
@@ -771,7 +821,7 @@
             <!-- IMAGE after Page 7 -->
             <div class="content image-content">
                 <table class="invisible-table">
-            <tr><td><div class="center-container"><img width="678px" height="395px" src="/otplogo.png" alt="OTP Logo"></div></td></tr>
+            <tr><td><div class="center-container"><img width="678px" height="395px" src="./otplogo.png" alt="OTP Logo"></div></td></tr>
                 <tr><td><p><div class="center-container">ខគម្ពីរដកស្រង់ចេញពី ពគប ១៩៥៤ សមាគមព្រះគម្ពីរកម្ពុចា</br>កែសម្រួលដោយមានការអនុញ្ញាតពី J.D. Crowley និង ង៉ែត សារិទ្ធ</br>© រក្សាសិទ្ធិ ២០២៥ </div></p></td></tr>
                 <tr><td><p><div class="center-container"><a href="https://www.youtube.com/channel/UC1Xgo1D7cunaJuFgMWXj0pw">បើចាប់អារម្មណ៍មើលវីដេអូបន្ថែម (យូធូប)</a></div></p></td></tr>
 
@@ -789,19 +839,41 @@
 
 
     <script>
-  (function(){
+(function(){
     const player = document.getElementById('globalAudio');
+    const globalPlayBtn = document.getElementById('globalPlayBtn');
+    const skipBackBtn = document.getElementById('skipBackBtn');
+    const skipForwardBtn = document.getElementById('skipForwardBtn');
+    const audioControls = document.getElementById('audioControls');
     let activeBtn = null;
+    let currentLang = 'th';
 
-    // Event delegation for all play buttons
+    // Update global play button text based on language
+    function updateGlobalButtonText() {
+      const texts = {
+        km: { play: 'លេងអូឌីយ៉ូ', pause: 'ផ្អាក' },
+        th: { play: 'เล่นเสียง', pause: 'หยุด' }
+      };
+      const text = texts[currentLang];
+      if (player.paused) {
+        globalPlayBtn.textContent = text.play;
+      } else {
+        globalPlayBtn.textContent = text.pause;
+      }
+    }
+
+    // Event delegation for all play buttons on pages
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.play-audio-btn');
-      if (!btn) return;
+      if (!btn || btn.id === 'globalPlayBtn') return;
 
       const section = btn.getAttribute('data-track');
       if (!section) return;
 
       const src = `https://onlytwopaths.net/thai${section}.mp3`;
+
+      // Show floating controls
+      audioControls.style.display = 'flex';
 
       // If clicking a different button, load that track
       if (activeBtn !== btn) {
@@ -811,26 +883,79 @@
         activeBtn = btn;
       }
 
-      // Toggle play/pause (button text always “លេងអូឌីយ៉ូ” by request)
+      // Toggle play/pause
       if (player.paused || player.src !== src) {
         player.play().then(() => {
           btn.classList.add('is-playing');
+          globalPlayBtn.classList.add('is-playing');
+          updateGlobalButtonText();
         }).catch(console.error);
       } else {
         player.pause();
         btn.classList.remove('is-playing');
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
+      }
+    });
+
+    // Global play/pause button
+    globalPlayBtn.addEventListener('click', () => {
+      if (!player.src) return;
+
+      if (player.paused) {
+        player.play().then(() => {
+          if (activeBtn) activeBtn.classList.add('is-playing');
+          globalPlayBtn.classList.add('is-playing');
+          updateGlobalButtonText();
+        }).catch(console.error);
+      } else {
+        player.pause();
+        if (activeBtn) activeBtn.classList.remove('is-playing');
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
+      }
+    });
+
+    // Skip backward 15 seconds
+    skipBackBtn.addEventListener('click', () => {
+      if (player.src) {
+        player.currentTime = Math.max(0, player.currentTime - 15);
+      }
+    });
+
+    // Skip forward 15 seconds
+    skipForwardBtn.addEventListener('click', () => {
+      if (player.src) {
+        player.currentTime = Math.min(player.duration, player.currentTime + 15);
       }
     });
 
     // When audio ends or is paused externally, clear UI
     player.addEventListener('ended', () => {
       if (activeBtn) activeBtn.classList.remove('is-playing');
+      globalPlayBtn.classList.remove('is-playing');
+      updateGlobalButtonText();
     });
+    
     player.addEventListener('pause', () => {
       if (activeBtn) activeBtn.classList.remove('is-playing');
+      globalPlayBtn.classList.remove('is-playing');
+      updateGlobalButtonText();
     });
-  })();
 
+    player.addEventListener('play', () => {
+      updateGlobalButtonText();
+    });
+
+    // Listen for language changes
+    document.addEventListener('languageChanged', (e) => {
+      currentLang = e.detail.lang;
+      updateGlobalButtonText();
+    });
+
+    // Initial text
+    updateGlobalButtonText();
+  })();
 
 function getLangFromQuery() {
   const params = new URLSearchParams(window.location.search);
@@ -913,6 +1038,8 @@ function getLangFromQuery() {
                 }
                 this.updateLanguageDisplay();
                 this.updateNavigationText();
+                // Dispatch language change event for audio controls
+                document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
             }
 
             updateLanguageDisplay() {
