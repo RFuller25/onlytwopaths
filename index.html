@@ -61,18 +61,20 @@
 
 /* Skip buttons */
 .repeat-btn {
-  padding: 8px 12px;
-  border: none;
-
+  padding: 10px 16px;
+  border: 1px solid var(--background-color);
+  border-radius: 9999px;
   background: var(--text-color);
   color: var(--background-color);
-  font: 500 0.85rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  font: 500 0.95rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
   cursor: pointer;
   transition: var(--transition);
+  backdrop-filter: blur(10px);
   display: flex;
-  align-items: center;
   justify-content: center;
-  min-width: 40px;
+  align-items: center;
+  align-self: center;
+  white-space: nowrap;
 }
 .repeat-btn:hover {
   transform: translateY(-1px);
