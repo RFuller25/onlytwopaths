@@ -1061,7 +1061,7 @@ function getLangFromQuery() {
 
             goToPage(pageIndex) {
                 const audioControls = document.getElementById('audioControls');
-                audioControls.style.display = 'flex';
+                audioControls.style.display = 'none';
 
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
                 this.isTransitioning = true;
