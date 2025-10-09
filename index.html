@@ -314,7 +314,7 @@
             
             .skip-btn {
                 padding: 6px 10px;
-                font-size: 0.75rem;
+                font-size: 3rem;
                 min-width: 35px;
             }
         }
@@ -446,8 +446,8 @@
     <!-- Floating Audio Controls -->
     <div class="audio-controls-container" id="audioControls" style="display: none;">
         <button class="skip-btn" id="skipBackBtn">← </button>
-        <button class="restart-btn" id="restartBtn"> ⟲ </button>
-        <button class="play-audio-btn" id="globalPlayBtn">เล่นเสียง</button>
+        <button class="skip-btn" id="restartBtn"> ⟲ </button>
+        <button class="play-audio-btn" id="globalPlayBtn">▶</button>
         <button class="skip-btn" id="skipForwardBtn"> →</button>
     </div>
 
@@ -879,8 +879,8 @@
     // Update global play button text based on language
     function updateGlobalButtonText() {
       const texts = {
-        km: { play: 'ចាក់សំឡេង', pause: 'ផ្អាក' },
-        th: { play: 'เล่นเสียง', pause: 'หยุด' }
+        km: { play: '▶', pause: '⏸︎' },
+        th: { play: '▶', pause: '⏸︎' }
       };
       const text = texts[currentLang];
       if (player.paused) {
