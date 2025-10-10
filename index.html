@@ -10,7 +10,7 @@
 /* Floating audio controls container */
 .audio-controls-container {
   position: fixed;
-  top: 5rem;
+  top: 6rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
@@ -66,7 +66,7 @@
   border-radius: 9999px;
   background: var(--text-color);
   color: var(--background-color);
-  font: 500 0.95rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: 2rem;
   cursor: pointer;
   transition: var(--transition);
   backdrop-filter: blur(10px);
@@ -459,7 +459,7 @@
     <!-- Floating Audio Controls -->
     <div class="audio-controls-container" id="audioControls" style="display: none;">
         <button class="skip-btn" id="skipBackBtn">← </button>
-        <button class="skip-btn" id="restartBtn"> ⟲ </button>
+        <button class="restart-btn" id="restartBtn"> ⟲ </button>
         <button class="skip-btn" id="skipForwardBtn"> →</button>
     </div>
 
@@ -988,7 +988,7 @@
     <script>
 (function(){
     const player = document.getElementById('globalAudio');
-    const globalPlayBtn = document.getElementById('globalPlayBtn');
+    // const globalPlayBtn = document.getElementById('globalPlayBtn');
     const skipBackBtn = document.getElementById('skipBackBtn');
     const skipForwardBtn = document.getElementById('skipForwardBtn');
     const restartBtn = document.getElementById('restartBtn');
@@ -997,24 +997,25 @@
     let activeBtn = null;
     let currentLang = 'th';
 
-    // Update global play button text based on language
+    // // Update global play button text based on language
     function updateGlobalButtonText() {
-      const texts = {
-        km: { play: '▶', pause: '⏹' },
-        th: { play: '▶', pause: '⏹' }
-      };
-      const text = texts[currentLang];
-      if (player.paused) {
-        globalPlayBtn.textContent = text.play;
-      } else {
-        globalPlayBtn.textContent = text.pause;
-      }
+        const t = 1 + 1;
+    //   const texts = {
+    //     km: { play: '▶', pause: '⏹' },
+    //     th: { play: '▶', pause: '⏹' }
+    //   };
+    //   const text = texts[currentLang];
+    //   if (player.paused) {
+    //     globalPlayBtn.textContent = text.play;
+    //   } else {
+    //     globalPlayBtn.textContent = text.pause;
+    //   }
     }
 
     // Event delegation for all play buttons on pages
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.play-audio-btn');
-      if (!btn || btn.id === 'globalPlayBtn') return;
+    //   if (!btn || btn.id === 'globalPlayBtn') return;
 
       const section = btn.getAttribute('data-track');
       if (!section) return;
@@ -1036,34 +1037,34 @@
       if (player.paused || player.src !== src) {
         player.play().then(() => {
           btn.classList.add('is-playing');
-          globalPlayBtn.classList.add('is-playing');
+        //   globalPlayBtn.classList.add('is-playing');
           updateGlobalButtonText();
         }).catch(console.error);
       } else {
         player.pause();
         btn.classList.remove('is-playing');
-        globalPlayBtn.classList.remove('is-playing');
+        // globalPlayBtn.classList.remove('is-playing');
         updateGlobalButtonText();
       }
     });
 
-    // Global play/pause button
-    globalPlayBtn.addEventListener('click', () => {
-      if (!player.src) return;
+    // // Global play/pause button
+    // globalPlayBtn.addEventListener('click', () => {
+    //   if (!player.src) return;
 
-      if (player.paused) {
-        player.play().then(() => {
-          if (activeBtn) activeBtn.classList.add('is-playing');
-          globalPlayBtn.classList.add('is-playing');
-          updateGlobalButtonText();
-        }).catch(console.error);
-      } else {
-        player.pause();
-        if (activeBtn) activeBtn.classList.remove('is-playing');
-        globalPlayBtn.classList.remove('is-playing');
-        updateGlobalButtonText();
-      }
-    });
+    //   if (player.paused) {
+    //     player.play().then(() => {
+    //       if (activeBtn) activeBtn.classList.add('is-playing');
+    //       globalPlayBtn.classList.add('is-playing');
+    //       updateGlobalButtonText();
+    //     }).catch(console.error);
+    //   } else {
+    //     player.pause();
+    //     if (activeBtn) activeBtn.classList.remove('is-playing');
+    //     globalPlayBtn.classList.remove('is-playing');
+    //     updateGlobalButtonText();
+    //   }
+    // });
 
     // Skip backward 15 seconds
     skipBackBtn.addEventListener('click', () => {
@@ -1090,13 +1091,13 @@
     // When audio ends or is paused externally, clear UI
     player.addEventListener('ended', () => {
       if (activeBtn) activeBtn.classList.remove('is-playing');
-      globalPlayBtn.classList.remove('is-playing');
+    //   globalPlayBtn.classList.remove('is-playing');
       updateGlobalButtonText();
     });
     
     player.addEventListener('pause', () => {
       if (activeBtn) activeBtn.classList.remove('is-playing');
-      globalPlayBtn.classList.remove('is-playing');
+    //   globalPlayBtn.classList.remove('is-playing');
       updateGlobalButtonText();
     });
 
