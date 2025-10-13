@@ -32,7 +32,7 @@
   border-radius: 9999px;
   background: var(--text-color);
   color: var(--background-color);
-  font: 500 0.95rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: 2rem;
   cursor: pointer;
   transition: var(--transition);
   backdrop-filter: blur(10px);
@@ -41,6 +41,7 @@
   align-items: center;
   align-self: center;
   white-space: nowrap;
+  
 }
 
 /* Skip buttons */
@@ -389,11 +390,11 @@
 
         .invisible-table th,
         .invisible-table td {
-        border: none;              /* no cell borders */
-        background: transparent;   /* no background */
-        padding: 0.5em;            /* keep some spacing */
-        word-break: break-word;
-        white-space: normal;
+            border: none;              /* no cell borders */
+            background: transparent;   /* no background */
+            padding: 0.5em;            /* keep some spacing */
+            word-break: break-word;
+            white-space: normal;
 
         }
 
@@ -1229,12 +1230,6 @@ function getLangFromQuery() {
                 const player = document.getElementById('globalAudio');
                 // player.pause();
                 // player.currentTime = 0;
-                this.currentPage = pageIndex;
-
-                // Dispatch page change event
-                document.dispatchEvent(new CustomEvent('pageChanged', { 
-                    detail: { pageIndex: this.currentPage } 
-                }));
 
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
                 this.isTransitioning = true;
@@ -1256,6 +1251,13 @@ function getLangFromQuery() {
                     this.updateNavigation();
                     setTimeout(() => { this.isTransitioning = false; }, 100);
                 }, 50);
+                this.currentPage = pageIndex;
+
+                // Dispatch page change event
+                document.dispatchEvent(new CustomEvent('pageChanged', { 
+                    detail: { pageIndex: this.currentPage } 
+                }));
+
             }
 
             goToNextPage() {
