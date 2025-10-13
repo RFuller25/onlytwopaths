@@ -26,7 +26,7 @@
 }
 
 /* Base style matches your rounded, subtle, glassy aesthetic */
-.play-audio-btn {
+.play-audio-btn page-play-trigger {
   padding: 10px 16px;
   border: 1px solid var(--background-color);
   border-radius: 9999px;
@@ -82,13 +82,13 @@
 
 
 /* Hover highlight */
-.play-audio-btn:hover,
+.play-audio-btn page-play-trigger:hover,
 .skip-btn:hover {
   transform: translateY(-1px);
 }
 
 /* Active/playing state — subtle "pressed" look */
-.play-audio-btn.is-playing {
+.play-audio-btn page-play-trigger.is-playing {
   background: var(--text-color);
   color: var(--background-color);
   border-color: var(--background-color);
@@ -321,7 +321,7 @@
                 gap: 0.3rem;
             }
             
-            .play-audio-btn {
+            .play-audio-btn page-play-trigger {
                 padding: 8px 12px;
                 font-size: 2rem;
             }
@@ -460,6 +460,7 @@
     <!-- Floating Audio Controls -->
     <div class="audio-controls-container" id="audioControls" style="display: none;">
         <button class="skip-btn" id="skipBackBtn"> &lt; </button>
+        <button class="play-audio-btn" id="globalPlayBtn">▶</button>
         <button class="skip-btn" id="restartBtn"> ⟲ </button>
         <button class="skip-btn" id="skipForwardBtn"> &gt; </button>
     </div>
@@ -470,7 +471,7 @@
     <div class="page active" data-page="0">
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="1">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="1">▶</button>
             </div>
             <h2>១ ព្រះដ៏សប្បុរស និងពេញដោយព្រះចេស្ដា បានបង្កើតពិភពលោកយើងនេះ។ ព្រះក៏បានបង្កើតមនុស្សមក ដើម្បីឲ្យគ្រប់គ្រងលើផែនដីរបស់ទ្រង់។ គ្រប់គ្នា និងគ្រប់អ្វីៗទាំងអស់ គឺជារបស់ព្រះជាម្ចាស់។</h2>
             <h3>លក្ខណៈរបស់ព្រះជាម្ចាស់</h3>
@@ -487,7 +488,7 @@
         <div class="content active-lang" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="9">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="9">▶</button>
             </div>
 
             <h2>๑ พระเจ้า ผู้ทรงเมตตาและเต็มไปด้วยฤทธานุภาพสูงสุด ทรงสร้างจักรวาลของเรา พระเจ้าก็ทรงสร้างมนุษย์มาเพื่อปกครองโลกของพระองค์ด้วย ทุกคนและทุกสิ่งเป็นของพระเจ้า</h2>
@@ -508,7 +509,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="9">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="9">▶</button>
             </div>
 
         <!-- IMAGE after Page 1 -->
@@ -518,7 +519,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="1">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="1">▶</button>
             </div>
 
             <!-- IMAGE after Page 1 -->
@@ -533,7 +534,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="2">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="2">▶</button>
             </div>
 
             <h2>២ យើងទាំងអស់គ្នាបានបដិសេធព្រះជាម្ចាស់ ដែលជាព្រះមហាក្សត្រដ៏ពិត ហើយថែមទាំងបានចូលរួមក្នុងការបះបោរប្រឆាំងនឹងទ្រង់ផងដែរ។</h2>
@@ -550,7 +551,7 @@
         </div>
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="10">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="10">▶</button>
             </div>
             <h2>๒ เราทุกคนได้ปฏิเสธพระเจ้า ผู้ทรงเป็นกษัตริย์ที่แท้จริง แล้วก็เข้าร่วมใน การกบฏต่อพระเจ้าด้วย</h2>
             <h3>การกบฏของมารซาตาน</h3>
@@ -570,7 +571,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="10">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="10">▶</button>
             </div>
 
         <!-- IMAGE after Page 2 -->
@@ -580,7 +581,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="2">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="2">▶</button>
             </div>
 
             <!-- IMAGE after Page 2 -->
@@ -595,7 +596,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="3">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="3">▶</button>
             </div>
 
             <h2>៣ ព្រះជាម្ចាស់នឹងបញ្ចប់ការបះបោរ ហើយដាក់ទោសដល់អ្នកបះបោរទាំងអស់។</h2>
@@ -611,7 +612,7 @@
         <div class="content" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="11">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="11">▶</button>
             </div>
 
             <h2>๓ พระเจ้าจะทรงยุติการกบฏ และลงโทษผู้กบฏทั้งหมด</h2>
@@ -630,7 +631,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="11">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="11">▶</button>
             </div>
 
         <!-- IMAGE after Page 3 -->
@@ -640,7 +641,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="3">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="3">▶</button>
             </div>
 
             <!-- IMAGE after Page 3 -->
@@ -656,7 +657,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="4">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="4">▶</button>
             </div>
 
             <h2>៤ ដោយសារព្រះជាម្ចាស់ស្រឡាញ់យើង ទ្រង់បានចាត់ព្រះរាជបុត្រាទ្រង់ឲ្យមកផែនដី ដើម្បីរំដោះយើងចេញពីបាប អារក្សសាតាំង និងសេចក្ដីស្លាប់។</h2>
@@ -673,7 +674,7 @@
         <div class="content" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="12">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="12">▶</button>
             </div>
 
             <h2>๔ เพราะพระเจ้าทรงรักเรา พระองค์ทรงประทานพระบุตรของพระองค์ในสวรรค์ให้เสด็จลงมาบนแผ่นดินโลก เพื่อไถ่เราให้พ้นจากบาป จากมารซาตาน และจากความตาย</h2>
@@ -693,7 +694,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="12">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="12">▶</button>
             </div>
 
         <!-- IMAGE after Page 4 -->
@@ -703,7 +704,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="4">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="4">▶</button>
             </div>
 
             <!-- IMAGE after Page 4 -->
@@ -717,7 +718,7 @@
     <div class="page" data-page="4">
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="5">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="5">▶</button>
             </div>
 
             <h2>៥ ព្រះយេស៊ូវបានលោះយើង ដោយសុគតជំនួសយើង។</h2>
@@ -733,7 +734,7 @@
         <div class="content" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="13">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="13">▶</button>
             </div>
 
             <h2>๕ พระเยซูทรงชดใช้ความผิดบาปของเราด้วยการสิ้นพระชนม์แทนเรา</h2>
@@ -752,7 +753,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="13">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="13">▶</button>
             </div>
 
         <!-- IMAGE after Page 5 -->
@@ -762,7 +763,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="5">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="5">▶</button>
             </div>
 
             <!-- IMAGE after Page 5 -->
@@ -777,7 +778,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="6">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="6">▶</button>
             </div>
 
             <h2>៦ ព្រះយេស៊ូវបានយកជ័យជម្នះលើសេចក្ដីស្លាប់ ដោយទ្រង់រស់ពីសុគតឡើងវិញ។ ទ្រង់គឺជាមហាក្សត្រដ៏ពិតនៃពិភពលោកនេះ ហើយទ្រង់នឹងយាងមកផែនដីម្ដងទៀត ដើម្បីជំនុំជម្រះមនុស្សលោកទាំងអស់។</h2>
@@ -794,7 +795,7 @@
         <div class="content" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="14">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="14">▶</button>
             </div>
 
             <h2>๖ พระเยซูทรงฟื้นขึ้นมาจากความตาย และมีชัยชนะเหนือความตาย พระองค์ทรงเป็นกษัตริย์ที่แท้จริงของโลกนี้ และพระองค์จะเสด็จมาอีกครั้งเพื่อพิพากษามนุษย์ทุกคน</h2>
@@ -814,7 +815,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="14">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="14">▶</button>
             </div>
 
         <!-- IMAGE after Page 6 -->
@@ -824,7 +825,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="6">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="6">▶</button>
             </div>
 
             <!-- IMAGE after Page 6 -->
@@ -839,7 +840,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="7">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="7">▶</button>
             </div>
 
             <h2>៧ មានផ្លូវតែពីរ ដែលអ្នកត្រូវជ្រើសរើស ៖ ផ្លូវនៃសេចក្ដីស្លាប់ ឬផ្លូវនៃជីវិត</h2>
@@ -854,7 +855,7 @@
         </div>
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="15">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="15">▶</button>
             </div>
             <h2>๗ มีเพียงสองทางที่ต้องเลือก : ทางแห่งความตาย หรือทางแห่งชีวิต</h2>
             <h3>ทางแห่งความตาย</h3>
@@ -872,7 +873,7 @@
 
         <div class="content" data-lang="th">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="15">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="15">▶</button>
             </div>
 
         <!-- IMAGE after Page 7 -->
@@ -882,7 +883,7 @@
         </div>
         <div class="content" data-lang="km">
             <div class="center-container">
-                <button class="play-audio-btn" data-track="7">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="7">▶</button>
             </div>
 
             <!-- IMAGE after Page 7 -->
@@ -895,7 +896,7 @@
         <div class="content" data-lang="km">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="8">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="8">▶</button>
             </div>
 
             <h2>សេចក្តីអញ្ជើញឲ្យជ្រើសរើសផ្លូវនៃជីវិត</br>ចូរប្រែចិត្តពីអំពើបាបរបស់អ្នក ហើយទុកចិត្តជឿលើព្រះយេស៊ូវចុះ។</h2>
@@ -922,7 +923,7 @@
         <div class="content" data-lang="th">
 
             <div class="center-container">
-                <button class="play-audio-btn" data-track="16">▶</button>
+                <button class="play-audio-btn page-play-trigger" data-track="16">▶</button>
             </div>
 
             <h2>การเชิญให้เลือกทางแห่งชีวิต</br>คุณต้องกลับใจจากบาปของคุณ และวางใจเชื่อในพระเยซู</h2>
@@ -989,132 +990,132 @@
     <script>
 (function(){
     const player = document.getElementById('globalAudio');
-    // const globalPlayBtn = document.getElementById('globalPlayBtn');
+    const globalPlayBtn = document.getElementById('globalPlayBtn');
     const skipBackBtn = document.getElementById('skipBackBtn');
     const skipForwardBtn = document.getElementById('skipForwardBtn');
     const restartBtn = document.getElementById('restartBtn');
-
     const audioControls = document.getElementById('audioControls');
-    let activeBtn = null;
+    
     let currentLang = 'th';
+    let currentPageIndex = 0;
+    
+    // Map page index to track numbers for each language
+    const trackMap = {
+        km: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8], // Adjust based on your pages
+        th: [9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16] // Adjust based on your pages
+    };
 
-    // // Update global play button text based on language
-    function updateGlobalButtonText() {
-        const t = 1 + 1;
-    //   const texts = {
-    //     km: { play: '▶', pause: '⏹' },
-    //     th: { play: '▶', pause: '⏹' }
-    //   };
-    //   const text = texts[currentLang];
-    //   if (player.paused) {
-    //     globalPlayBtn.textContent = text.play;
-    //   } else {
-    //     globalPlayBtn.textContent = text.pause;
-    //   }
+    function getCurrentTrack() {
+        return trackMap[currentLang][currentPageIndex];
     }
 
-    // Event delegation for all play buttons on pages
+    function loadCurrentTrack() {
+        const track = getCurrentTrack();
+        if (track) {
+            const src = `https://onlytwopaths.net/thai${track}.mp3`;
+            if (player.src !== src) {
+                const wasPlaying = !player.paused;
+                player.src = src;
+                if (wasPlaying) {
+                    player.play().catch(console.error);
+                }
+            }
+        }
+    }
+
+    function updateGlobalButtonText() {
+        const texts = {
+            km: { play: '▶', pause: '⏹' },
+            th: { play: '▶', pause: '⏹' }
+        };
+        const text = texts[currentLang];
+        globalPlayBtn.textContent = player.paused ? text.play : text.pause;
+    }
+
+    // Handle page play button clicks (triggers)
     document.addEventListener('click', (e) => {
-      const btn = e.target.closest('.play-audio-btn');
-    //   if (!btn || btn.id === 'globalPlayBtn') return;
+        const btn = e.target.closest('.page-play-trigger');
+        if (!btn) return;
 
-      const section = btn.getAttribute('data-track');
-      if (!section) return;
-
-      const src = `https://onlytwopaths.net/thai${section}.mp3`;
-
-      // Show floating controls
-      audioControls.style.display = 'flex';
-
-      // If clicking a different button, load that track
-      if (activeBtn !== btn) {
-        player.src = src;
-        // reset previous button state
-        if (activeBtn) activeBtn.classList.remove('is-playing');
-        activeBtn = btn;
-      }
-
-      // Toggle play/pause
-      if (player.paused || player.src !== src) {
+        audioControls.style.display = 'flex';
+        loadCurrentTrack();
+        
         player.play().then(() => {
-          btn.classList.add('is-playing');
-        //   globalPlayBtn.classList.add('is-playing');
-          updateGlobalButtonText();
+            globalPlayBtn.classList.add('is-playing');
+            updateGlobalButtonText();
         }).catch(console.error);
-      } else {
-        player.pause();
-        btn.classList.remove('is-playing');
-        // globalPlayBtn.classList.remove('is-playing');
-        updateGlobalButtonText();
-      }
     });
 
-    // // Global play/pause button
-    // globalPlayBtn.addEventListener('click', () => {
-    //   if (!player.src) return;
+    // Global play/pause button
+    globalPlayBtn.addEventListener('click', () => {
+        if (!player.src) {
+            loadCurrentTrack();
+        }
 
-    //   if (player.paused) {
-    //     player.play().then(() => {
-    //       if (activeBtn) activeBtn.classList.add('is-playing');
-    //       globalPlayBtn.classList.add('is-playing');
-    //       updateGlobalButtonText();
-    //     }).catch(console.error);
-    //   } else {
-    //     player.pause();
-    //     if (activeBtn) activeBtn.classList.remove('is-playing');
-    //     globalPlayBtn.classList.remove('is-playing');
-    //     updateGlobalButtonText();
-    //   }
-    // });
+        if (player.paused) {
+            player.play().then(() => {
+                globalPlayBtn.classList.add('is-playing');
+                updateGlobalButtonText();
+            }).catch(console.error);
+        } else {
+            player.pause();
+            globalPlayBtn.classList.remove('is-playing');
+            updateGlobalButtonText();
+        }
+    });
 
     // Skip backward 15 seconds
     skipBackBtn.addEventListener('click', () => {
-      if (player.src) {
-        player.currentTime = Math.max(0, player.currentTime - 15);
-      }
+        if (player.src) {
+            player.currentTime = Math.max(0, player.currentTime - 15);
+        }
     });
 
     // Skip forward 15 seconds
     skipForwardBtn.addEventListener('click', () => {
-      if (player.src) {
-        player.currentTime = Math.min(player.duration, player.currentTime + 15);
-      }
+        if (player.src) {
+            player.currentTime = Math.min(player.duration, player.currentTime + 15);
+        }
     });
 
-        // Skip forward 15 seconds
+    // Restart button
     restartBtn.addEventListener('click', () => {
-      if (player.src) {
-        player.currentTime = 0;
-      }
+        if (player.src) {
+            player.currentTime = 0;
+        }
     });
 
-
-    // When audio ends or is paused externally, clear UI
+    // Audio event listeners
     player.addEventListener('ended', () => {
-      if (activeBtn) activeBtn.classList.remove('is-playing');
-    //   globalPlayBtn.classList.remove('is-playing');
-      updateGlobalButtonText();
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
     });
     
     player.addEventListener('pause', () => {
-      if (activeBtn) activeBtn.classList.remove('is-playing');
-    //   globalPlayBtn.classList.remove('is-playing');
-      updateGlobalButtonText();
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
     });
 
     player.addEventListener('play', () => {
-      updateGlobalButtonText();
+        updateGlobalButtonText();
+    });
+
+    // Listen for page changes
+    document.addEventListener('pageChanged', (e) => {
+        currentPageIndex = e.detail.pageIndex;
+        // Optionally reload track when page changes
+        // loadCurrentTrack();
     });
 
     // Listen for language changes
     document.addEventListener('languageChanged', (e) => {
-      currentLang = e.detail.lang;
-      updateGlobalButtonText();
+        currentLang = e.detail.lang;
+        loadCurrentTrack();
+        updateGlobalButtonText();
     });
 
-    // Initial text
     updateGlobalButtonText();
-  })();
+})();
 
 function getLangFromQuery() {
   const params = new URLSearchParams(window.location.search);
@@ -1228,6 +1229,12 @@ function getLangFromQuery() {
                 const player = document.getElementById('globalAudio');
                 // player.pause();
                 // player.currentTime = 0;
+                this.currentPage = pageIndex;
+
+                // Dispatch page change event
+                document.dispatchEvent(new CustomEvent('pageChanged', { 
+                    detail: { pageIndex: this.currentPage } 
+                }));
 
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
                 this.isTransitioning = true;
