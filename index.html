@@ -315,7 +315,7 @@
         @media (max-width: 768px) {
             
             body, .page-container { height: 100vh; height: 100dvh; }
-            .language-switch { top: 1rem; right: 1rem; transform: scale(0.9); }
+            .language-switch { top: 1rem; right: 1rem; transform: scale(0.9); backdrop-filter: none; }
             .page { 
                 height: auto; 
                 min-height: calc(100vh - 1rem); 
@@ -323,6 +323,8 @@
                 margin: 0.5rem 0; /* Changed to only vertical margin */
                 padding: 1.5rem 1rem; /* Reduced horizontal padding */
                 border-radius: 10px; /* Smaller radius on mobile */
+                backdrop-filter: none;
+
             }
             .content { min-height: auto; display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
                 padding-top: 1rem; padding-bottom: 5rem; }
@@ -1054,20 +1056,26 @@
         globalPlayBtn.textContent = player.paused ? text.play : text.pause;
     }
 
-    // Handle page play button clicks (triggers)
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.page-play-trigger');
-        if (!btn) return;
+// Remove the document-level click listener for .page-play-trigger
+// Instead, add it once with proper cleanup
 
-        audioControls.style.display = 'flex';
-        loadCurrentTrack();
-        
-        player.play().then(() => {
-            globalPlayBtn.classList.add('is-playing');
-            updateGlobalButtonText();
-        }).catch(console.error);
+const handlePlayClick = (e) => {
+    const btn = e.target.closest('.page-play-trigger');
+    if (!btn) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    audioControls.style.display = 'flex';
+    loadCurrentTrack();
+    
+    player.play().catch(err => {
+        console.warn('Play failed:', err);
     });
+};
 
+// Add once
+document.addEventListener('click', handlePlayClick, { passive: false });
     // Global play/pause button
     globalPlayBtn.addEventListener('click', () => {
         if (!player.src) {
@@ -1246,39 +1254,56 @@ function getLangFromQuery() {
             }
 
             goToPage(pageIndex) {
-                const audioControls = document.getElementById('audioControls');
-                audioControls.style.display = 'none';
-                const player = document.getElementById('globalAudio');
-                // player.pause();
-                // player.currentTime = 0;
-
-                if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) return;
-                this.isTransitioning = true;
-                this.pages[this.currentPage].classList.remove('active');
-                if (pageIndex > this.currentPage) {
-                    this.pages[this.currentPage].classList.add('prev');
-                } else {
-                    this.pages[this.currentPage].classList.remove('prev');
+                if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) {
+                    return; // Added explicit return
                 }
-                this.currentPage = pageIndex;
-                setTimeout(() => {
-                    this.pages[this.currentPage].classList.add('active');
-                    this.pages[this.currentPage].classList.remove('prev');
-                    this.pages[this.currentPage].scrollTop = 0;
-                    window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); // ensure scroll reset
-                    this.pages.forEach((page, index) => {
-                        if (index !== this.currentPage) page.classList.remove('active', 'prev');
+                
+                this.isTransitioning = true;
+                
+                // Clear any existing transitions
+                this.pages.forEach(page => {
+                    page.style.transition = 'none';
+                });
+                
+                requestAnimationFrame(() => {
+                    this.pages[this.currentPage].classList.remove('active');
+                    
+                    if (pageIndex > this.currentPage) {
+                        this.pages[this.currentPage].classList.add('prev');
+                    } else {
+                        this.pages[this.currentPage].classList.remove('prev');
+                    }
+                    
+                    this.currentPage = pageIndex;
+                    
+                    // Re-enable transitions
+                    requestAnimationFrame(() => {
+                        this.pages.forEach(page => {
+                            page.style.transition = '';
+                        });
+                        
+                        this.pages[this.currentPage].classList.add('active');
+                        this.pages[this.currentPage].classList.remove('prev');
+                        this.pages[this.currentPage].scrollTop = 0;
+                        
+                        this.pages.forEach((page, index) => {
+                            if (index !== this.currentPage) {
+                                page.classList.remove('active', 'prev');
+                            }
+                        });
+                        
+                        this.updateNavigation();
+                        
+                        // Dispatch page change event
+                        document.dispatchEvent(new CustomEvent('pageChanged', { 
+                            detail: { pageIndex: this.currentPage } 
+                        }));
+                        
+                        setTimeout(() => { 
+                            this.isTransitioning = false; 
+                        }, 600); // Match your transition duration
                     });
-                    this.updateNavigation();
-                    setTimeout(() => { this.isTransitioning = false; }, 100);
-                }, 50);
-                this.currentPage = pageIndex;
-
-                // Dispatch page change event
-                document.dispatchEvent(new CustomEvent('pageChanged', { 
-                    detail: { pageIndex: this.currentPage } 
-                }));
-
+                });
             }
 
             goToNextPage() {
