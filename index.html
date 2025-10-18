@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>มีเพียงสองทาง</title>
@@ -1254,56 +1257,84 @@ function getLangFromQuery() {
             }
 
             goToPage(pageIndex) {
+                // Validate page index and prevent concurrent transitions
                 if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) {
-                    return; // Added explicit return
+                    return;
                 }
                 
+                // Lock transitions
                 this.isTransitioning = true;
                 
-                // Clear any existing transitions
-                this.pages.forEach(page => {
-                    page.style.transition = 'none';
-                });
+                // Store old page reference
+                const oldPageIndex = this.currentPage;
+                const isMovingForward = pageIndex > this.currentPage;
                 
-                requestAnimationFrame(() => {
-                    this.pages[this.currentPage].classList.remove('active');
+                // Update current page immediately
+                this.currentPage = pageIndex;
+                
+                // Step 1: Remove active state from old page (without transition)
+                this.pages[oldPageIndex].style.transition = 'none';
+                this.pages[oldPageIndex].classList.remove('active');
+                
+                if (isMovingForward) {
+                    this.pages[oldPageIndex].classList.add('prev');
+                } else {
+                    this.pages[oldPageIndex].classList.remove('prev');
+                }
+                
+                // Force reflow to ensure style changes are applied
+                void this.pages[oldPageIndex].offsetHeight;
+                
+                // Step 2: Prepare new page (without transition)
+                this.pages[this.currentPage].style.transition = 'none';
+                this.pages[this.currentPage].classList.remove('prev');
+                this.pages[this.currentPage].scrollTop = 0;
+                
+                // Force reflow again
+                void this.pages[this.currentPage].offsetHeight;
+                
+                // Step 3: Re-enable transitions after a small delay (iOS-friendly)
+                setTimeout(() => {
+                    // Re-enable transitions for both pages
+                    this.pages[oldPageIndex].style.transition = '';
+                    this.pages[this.currentPage].style.transition = '';
                     
-                    if (pageIndex > this.currentPage) {
-                        this.pages[this.currentPage].classList.add('prev');
-                    } else {
-                        this.pages[this.currentPage].classList.remove('prev');
-                    }
+                    // Force reflow before adding active class
+                    void this.pages[this.currentPage].offsetHeight;
                     
-                    this.currentPage = pageIndex;
+                    // Add active class to trigger transition
+                    this.pages[this.currentPage].classList.add('active');
                     
-                    // Re-enable transitions
-                    requestAnimationFrame(() => {
-                        this.pages.forEach(page => {
+                    // Clean up all other pages
+                    this.pages.forEach((page, index) => {
+                        if (index !== this.currentPage && index !== oldPageIndex) {
+                            page.classList.remove('active', 'prev');
                             page.style.transition = '';
-                        });
-                        
-                        this.pages[this.currentPage].classList.add('active');
-                        this.pages[this.currentPage].classList.remove('prev');
-                        this.pages[this.currentPage].scrollTop = 0;
-                        
-                        this.pages.forEach((page, index) => {
-                            if (index !== this.currentPage) {
-                                page.classList.remove('active', 'prev');
-                            }
-                        });
-                        
-                        this.updateNavigation();
-                        
-                        // Dispatch page change event
+                        }
+                    });
+                    
+                    // Update navigation state
+                    this.updateNavigation();
+                    
+                    // Dispatch page change event
+                    try {
                         document.dispatchEvent(new CustomEvent('pageChanged', { 
                             detail: { pageIndex: this.currentPage } 
                         }));
+                    } catch(e) {
+                        console.warn('pageChanged event failed:', e);
+                    }
+                    
+                    // Unlock transitions after animation completes
+                    setTimeout(() => {
+                        this.isTransitioning = false;
                         
-                        setTimeout(() => { 
-                            this.isTransitioning = false; 
-                        }, 600); // Match your transition duration
-                    });
-                });
+                        // Final cleanup of old page
+                        this.pages[oldPageIndex].classList.remove('prev');
+                        this.pages[oldPageIndex].style.transition = '';
+                    }, 650); // Slightly longer than transition duration for safety
+                    
+                }, 20); // iOS-safe delay (~1-2 frames)
             }
 
             goToNextPage() {
