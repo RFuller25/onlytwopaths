@@ -759,7 +759,9 @@
     let currentLang = 'th';
     let currentPageIndex = 0;
     
+    // Map page index to track numbers for each language
     const trackMap = {
+        km: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8], // Adjust based on your pages
         th: [9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16] // Adjust based on your pages
     };
 
@@ -871,6 +873,13 @@ document.addEventListener('click', handlePlayClick, { passive: false });
         // loadCurrentTrack();
     });
 
+    // Listen for language changes
+    document.addEventListener('languageChanged', (e) => {
+        currentLang = e.detail.lang;
+        loadCurrentTrack();
+        updateGlobalButtonText();
+    });
+
     updateGlobalButtonText();
 })();
 
@@ -890,7 +899,6 @@ function getLangFromQuery() {
                 this.totalPages = this.pages.length;
                 this.prevBtn = document.getElementById('prevBtn');
                 this.nextBtn = document.getElementById('nextBtn');
-
                 this.isTransitioning = false;
                 this.init();
             }
@@ -899,7 +907,7 @@ function getLangFromQuery() {
                 this.updateNavigation();
                 this.bindEvents();
                 this.handleKeyboard();
-
+                this.updateLanguageDisplay();
                 this.updateNavigationText();
             }
 
@@ -934,8 +942,34 @@ function getLangFromQuery() {
                 });
             }
 
+            switchLanguage(lang) {
+                if (lang === this.currentLang) return;
+                this.currentLang = lang;
+                if (lang === 'km') {
+                    document.title = 'មានផ្លូវតែពីរ';
+                } else {
+                    document.title = 'มีเพียงสองทาง';
+                }
+                this.updateLanguageDisplay();
+                this.updateNavigationText();
+                const player = document.getElementById('globalAudio');
+                player.pause();
+                player.currentTime = 0;
+
+                // Dispatch language change event for audio controls
+                document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+            }
+
+            updateLanguageDisplay() {
+                const allContent = document.querySelectorAll('.content[data-lang]');
+                allContent.forEach(content => content.classList.remove('active-lang'));
+                const currentLangContent = document.querySelectorAll(`.content[data-lang="${this.currentLang}"]`);
+                currentLangContent.forEach(content => content.classList.add('active-lang'));
+            }
+
             updateNavigationText() {
                 const navTexts = {
+                    km: { prev: '←', next: '→' },
                     th: { prev: '←', next: '→' }
                 };
                 const texts = navTexts[this.currentLang];
@@ -1038,6 +1072,10 @@ function getLangFromQuery() {
             }
         }
 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const pag = new LogicalPagination('th'); // Thai fallback
+        });
     </script>
 </body>
 </html>
