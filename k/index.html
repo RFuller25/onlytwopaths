@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>มีเพียงสองทาง</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Floating audio controls container */
+        .audio-controls-container {
+            position: fixed;
+            top: 6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--text-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Base style matches your rounded, subtle, glassy aesthetic */
+        .play-audio-btn page-play-trigger {
+            padding: 10px 16px;
+            border: 1px solid var(--background-color);
+            border-radius: 9999px;
+            background: var(--text-color);
+            color: var(--background-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            white-space: nowrap;
+        }
+
+
+        /* Base style matches your rounded, subtle, glassy aesthetic */
+        .play-audio-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--background-color);
+            border-radius: 9999px;
+            background: var(--text-color);
+            color: var(--background-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            white-space: nowrap;
+        }
+
+
+        /* Skip buttons */
+        .skip-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--background-color);
+            border-radius: 9999px;
+            background: var(--text-color);
+            color: var(--background-color);
+            font: 500 0.85rem/1 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            font-size: 1rem;
+        }
+
+        /* Skip buttons */
+        .repeat-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--background-color);
+            border-radius: 9999px;
+            background: var(--text-color);
+            color: var(--background-color);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+        .repeat-btn:hover {
+            transform: translateY(-1px);
+        }
+
+
+        /* Hover highlight */
+        .play-audio-btn page-play-trigger:hover,
+        .skip-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Active/playing state — subtle "pressed" look */
+        .play-audio-btn page-play-trigger.is-playing {
+            background: var(--text-color);
+            color: var(--background-color);
+            border-color: var(--background-color);
+            transform: translateY(0);
+        }
+
+        /* Disabled state for skip buttons */
+        .skip-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        :root {
+            --text-color: #ffffff;
+            --background-color: #1d2b3a;
+            --point-color: #fcde7c; 
+            --verse-color: #8ec0de;
+
+
+            --transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+                    a {
+            color: var(--point-color);
+            }
+
+            /* optional: preserve color after visiting */
+            a:visited {
+            color: var(--point-color);
+            }
+
+            /* optional: add hover/focus states if desired */
+            a:hover,
+            a:focus {
+            color: var(--point-color);
+            text-decoration: underline; /* or none if you want it cleaner */
+            }
+
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+
+        
+
+        
+        .page-container { position: relative; width: 100vw; height: 100vh; overflow-y: auto; }
+
+            .page {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+                min-height: 100vh;
+                max-width: 100vw;
+                overflow-y: auto;
+                display: flex; 
+                flex-direction: column; 
+                justify-content: flex-start; 
+                align-items: center;
+                padding: 2rem; 
+                opacity: 0; 
+                transform: translateX(100px) scale(0.95);
+                transition: var(--transition);
+                background: var(--background-color);
+                backdrop-filter: blur(20px);
+                border-radius: 20px; 
+                margin: 1rem 0; /* Changed from 1rem to 1rem 0 - only top/bottom margin */
+                scroll-behavior: smooth;
+            }
+
+        .page.active { opacity: 1; transform: translateX(0) scale(1); }
+        .page.prev { transform: translateX(-100px) scale(0.95); }
+
+        .page:not(.active) { pointer-events: none; }
+
+        .content {
+            max-width: 800px; width: 100vw; text-align: left;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            padding-bottom: 6rem; min-height: fit-content;
+            align-items: center;
+            width: 100%;
+        }
+
+        .content.image-content {
+            display: flex; justify-content: center; align-items: center;
+            height: calc(100vh - 8rem); padding-bottom: 2rem; width: 100%;
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1.5rem; color: var(--text-color); font-weight: 700; position: relative; }
+        h1::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 3px; background: var(--background-color); border-radius: 2px;
+        }
+
+        /* NEW: styled H2 container */
+        h2 {
+            font-size: clamp(1.7rem, 5vw, 2.7rem);
+            margin: 1rem auto 1.25rem auto;
+            color: var(--text-color);
+            font-weight: 600;
+            background:  var(--background-color);
+            border: 1px solid var(--text-color);
+            border-radius: 14px;
+            padding: 0.75rem 1rem;
+            line-height: 1.9;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: clamp(1.4rem, 4vw, 2.1rem);
+            margin: 1rem 0 0.8rem 0;
+            color: var(--text-color);
+            font-weight: 1200;
+            position: relative; /* for underline */
+            padding-bottom: 0.35rem; /* breathing room for underline */
+            padding-top: 2.5rem; /* spacing above */
+            text-align: center;
+
+        }
+
+        /* NEW: h3 underline in same spirit as h1, slightly subtler */
+        h3::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 2px;
+            background: var(--text-color);
+            border-radius: 2px;
+            opacity: 0.9;
+        }
+
+        p { font-size: clamp(1.2rem, 2.7vw, 1.4rem); line-height: 1.8; margin-bottom: 1.05rem; text-align: justify; color: var(--text-color); }
+
+        img { max-width: 90vw; max-height: 70vh; width: auto; height: auto; object-fit: scale-down; border-radius: 15px;
+             transition: transform 0.3s ease;}
+        img:hover { transform: scale(1.02); }
+
+        .navigation {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 1rem; z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px; background: var(--text-color);
+            color: var(--background-color); border: none; border-radius: 50px; cursor: pointer; font-family: inherit;
+            font-size: 1rem; font-weight: 500; 
+            transition: var(--transition); position: relative; overflow: hidden;
+        }
+        .nav-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--background-color); opacity: 0.2; color: var(--text-color);
+            transition: left 0.5s ease;
+        }
+        .nav-btn:hover::before { left: 100%; }
+        .nav-btn:hover { transform: translateY(-2px);
+            background: var(--text-color); }
+        .nav-btn:active { transform: translateY(0); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 768px) {
+            
+            body, .page-container { height: 100vh; height: 100dvh; }
+
+            .page { 
+                height: auto; 
+                min-height: calc(100vh - 1rem); 
+                height: 100%;
+                margin: 0.5rem 0; /* Changed to only vertical margin */
+                padding: 1.5rem 1rem; /* Reduced horizontal padding */
+                border-radius: 10px; /* Smaller radius on mobile */
+                backdrop-filter: none;
+
+            }
+            .content { min-height: auto; display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
+                padding-top: 1rem; padding-bottom: 5rem; }
+            .content.image-content { width: 90vw; height: auto; min-height: calc(100vh - 6rem); justify-content: center; align-items: center; }
+            .navigation { bottom: 1rem; gap: 0.5rem; position: fixed; z-index: 1001; }
+            .nav-btn { padding: 12px 20px; font-size: 0.9rem; font-weight: 600; }
+
+            h1 { font-size: 2.7rem; margin-bottom: 1rem; text-align: center; }
+            h2 { font-size: 2.1rem; text-align: center; margin-bottom: 0.8rem; }
+            h3 { font-size: 1.7rem; text-align: center; margin-bottom: 0.8rem; }
+            p { text-align: left; margin-bottom: 1rem; }
+            ul, ol { margin: 1rem 0; padding-left: 1.5rem; }
+            img { max-height: 60vh; max-width: 80vw; max-height: 60dvh; margin: 1rem 0; }
+
+            .audio-controls-container {
+                top: 4rem;
+                padding: 0.4rem 0.8rem;
+                gap: 0.3rem;
+            }
+            
+            .play-audio-btn page-play-trigger {
+                padding: 8px 12px;
+                font-size: 2rem;
+            }
+            
+            .skip-btn {
+                padding: 6px 10px;
+                font-size: 2rem;
+                min-width: 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page { height: auto; min-height: calc(100vh - 0.5rem); height: 100%; }
+            .content { padding-top: 1rem; padding-bottom: 5rem; }
+            .content.image-content { min-height: calc(80vh - 4rem); }
+            .navigation { bottom: 0.5rem; left: 50%; transform: translateX(-50%); width: calc(100% - 1rem);
+                justify-content: space-between; max-width: 300px; }
+            .nav-btn { flex: 1; margin: 0 0.25rem; padding: 10px 16px; font-size: 0.85rem; }
+            table { font-size: 0.8rem; overflow-x: auto; display: block; white-space: nowrap; }
+            th, td { padding: 0.5rem 0.3rem; }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .content { padding-top: 1rem; padding-bottom: 4rem; }
+            .content.image-content { min-height: calc(100vh - 4rem); }
+            .page { overflow-y: auto; height: 100%; }
+            img { max-height: 50vh; max-height: 50dvh; }
+        }
+
+        .content > * { animation: slideInFromRight 0.6s ease-out backwards; }
+        .content > *:nth-child(2) { animation-delay: 0.1s; }
+        .content > *:nth-child(3) { animation-delay: 0.2s; }
+        .content > *:nth-child(4) { animation-delay: 0.3s; }
+        @keyframes slideInFromRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+        .content[data-lang]:not(.active-lang) { display: none; }
+
+        /* NEW: Typography refinements per request */
+
+        /* Bold-only => light gold rounded chip (but remove for bold+italic via override above) */
+        .strong-container {
+            /*{% comment %} background: var(--light-gold);
+            border: 1px solid var(--light-gold-border); {% endcomment %}*/
+            color: var(--point-color);
+            border-radius: 10px;
+            padding: 0.15rem 0.4rem;
+            display: inline-block;
+            line-height: 1.6;
+            margin: 0 0.1rem;
+            align-items: center;
+            text-align: center;
+            font-size: clamp(1.2rem, 2.7vw, 1.4rem);
+            display: flex;
+            justify-content: center; /* centers horizontally */
+            align-items: center;     /* centers vertically */
+
+            
+        }
+
+                .invisible-table {
+        border-collapse: collapse; /* clean spacing */
+        border: none;              /* no table border */
+        width: 99%;               /* optional: make it full width */
+        }
+
+        .invisible-table th,
+        .invisible-table td {
+            border: none;              /* no cell borders */
+            background: transparent;   /* no background */
+            padding: 0.5em;            /* keep some spacing */
+            word-break: break-word;
+            white-space: normal;
+
+        }
+
+
+        .em-strong-container {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            display: inline;
+            margin: 0;
+            font-size: clamp(1.2rem, 2.7vw, 1.4rem);
+            color: var(--verse-color);
+            text-align: left;
+            object-align: left;
+
+        }
+
+        [data-lang="km"] {
+        font-family: 'Battambang', 'Noto Sans Khmer', 'Khmer OS', sans-serif;
+        }
+
+        .hanging-indent {
+        padding-left: 2em;   /* adjust width of hanging indent */
+        text-indent: -2em;   /* shift first line back out */
+        }
+
+
+        .center-container {
+            display: flex;
+            justify-content: center; /* centers horizontally */
+            align-items: center;     /* centers vertically */
+            text-align: center;
+            font-size: clamp(1.2rem, 2.7vw, 1.4rem);
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <!-- Floating Audio Controls -->
+    <div class="audio-controls-container" id="audioControls" style="display: none;">
+        <button class="skip-btn" id="skipBackBtn"> &lt; </button>
+        <button class="play-audio-btn" id="globalPlayBtn">▶</button>
+        <button class="skip-btn" id="restartBtn"> ⟲ </button>
+        <button class="skip-btn" id="skipForwardBtn"> &gt; </button>
+    </div>
+
+<div class="page-container">
+
+    <!-- Page 1 -->
+    <div class="page active" data-page="0">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="1">▶</button>
+            </div>
+            <h2>១ ព្រះដ៏សប្បុរស និងពេញដោយព្រះចេស្ដា បានបង្កើតពិភពលោកយើងនេះ។ ព្រះក៏បានបង្កើតមនុស្សមក ដើម្បីឲ្យគ្រប់គ្រងលើផែនដីរបស់ទ្រង់។ គ្រប់គ្នា និងគ្រប់អ្វីៗទាំងអស់ គឺជារបស់ព្រះជាម្ចាស់។</h2>
+            <h3>លក្ខណៈរបស់ព្រះជាម្ចាស់</h3>
+            <p>ព្រះ​ជា​ម្ចាស់​មាន​បន្ទូល​នៅ​ក្នុង​គម្ពីរ​ថា ទ្រង់​អស្ចារ្យ​​ហួស​ពី​ការ​យល់​ដឹង​របស់​យើង។ ទ្រង់​គង់នៅ​​តាំង​ពី​អស់កល្ប​រៀង​មក គឺ​គ្មាន​ពេល​ចាប់​ផ្ដើម ហើយ​ក៏គ្មាន​ទី​បញ្ចប់​​ដែរ។ ទ្រង់​ខ្ពង់ខ្ពស់​ជាង​អ្វីៗ​ទាំង​អស់ ហើយ​មាន​គ្រប់​អំណាច​ព្រះ​ចេស្ដា។ ទ្រង់​គង់​នៅ​ដោយ​អំណាច​ព្រះចេស្ដា​របស់ទ្រង់​ផ្ទាល់ គឺ​ទ្រង់​មិន​ត្រូវ​ការនឹង​អ្វី​ ដើម្បី​ទ្រទ្រង់​ព្រះជន្ម​ទ្រង់​នោះ​ឡើយ។ ទ្រង់​​ជ្រាប​គ្រប់​ការ​ទាំង​អស់ ហើយគង់​នៅ​គ្រប់​ទីកន្លែង​ក្នុង​ពេល​តែ​មួយ។ ព្រះ​ជាម្ចាស់​ល្អ​បរិសុទ្ធ និង​សុចរិត ទ្រង់​ស្រឡាញ់​គ្រប់​ទាំង ការ​ល្អ ហើយ​ទ្រង់​ត្រូវដាក់ទោស​​គ្រប់​ទាំង​ការ​អាក្រក់។ ប៉ុន្តែ​ ព្រះ​ជាម្ចាស់​ជា​ព្រះនៃ​សេចក្ដី​​ស្រឡាញ់ មេត្តាករុណា និង​ប្រោសប្រណី។ ព្រះ​ជាម្ចាស់​​ល្អ​បំផុត មាន​ព្រះចេស្ដា​បំផុត និង​មាន​ព្រះ​ប្រាជ្ញាញាណ​លើស​អ្វីៗ​ទាំង​អស់។ ទ្រង់​ជា​ម្ចាស់​គ្រប់គ្រង​ និង​ជា​មហាក្សត្រ​ដ៏​ល្អ​បំផុត​លើ​ជីវិត​របស់​យើង។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី១ យើងឃើញមកុដដែលតំណាងឲ្យព្រះជាស្តេច។</div></p>
+            <p>ព្រះគម្ពីរបាន​សម្ដែង​ថា <span class="em-strong-container">«ឱ​ព្រះ​អម្ចាស់ ជា​ព្រះ​នៃ​យើង​រាល់​គ្នា​អើយ ទ្រង់​គួរ​នឹង​ទទួល​​សិរី​ល្អ កិត្តិនាម និង​ព្រះ​ចេស្ដា ដ្បិត​ទ្រង់​បាន​បង្កើត​របស់​សព្វសារពើ​មក​ ហើយ​គឺ​ដោយ​បំណង​ព្រះហឫទ័យ​ទ្រង់​ហើយ ដែល​របស់​ទាំង​នោះ​បាន​កើត​មក​ ហើយ​មាន​នៅ​ផង» (វិវរណៈ ៤:១១)</span></p>
+            <h3>កិច្ចការ និងគោលបំណងរបស់ព្រះជាម្ចាស់</h3>
+            <p>ដំបូង​ព្រះ​ជាម្ចាស់​បាន​បង្កើត​វិញ្ញាណយ៉ាង​ច្រើន ​​ដែលធម្មតា​មនុស្ស​​មើល​មិន​ឃើញ​​ឡើយ ​យើង​ហៅ​ថា ពួក​ទេវតា។ ទ្រង់​បាន​បង្កើត​ពួក​ទេវតា​មក ​ឲ្យ​មាន​​អំណាច​ សិរីរុងរឿង និង​​ភាព​បរិសុទ្ធ ដើម្បី​​ឲ្យពួក​គេ​អាច​បំពេញ​ព្រះហឫទ័យ​ព្រះ​ជាម្ចាស់​នៅឯ​​ស្ថានដ៏ខ្ពស់បំផុត។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី១ យើងឃើញទេវតាទាំងអស់កំពុងលុតជង្គង់ថ្វាយបង្គំព្រះជាម្ចាស់។</div></p>
+            <p>បន្ទាប់​មក ព្រះជា​ម្ចាស់​បាន​បង្កើត​​ចក្រវាល និង​របស់​សព្វ​​បែប​យ៉ាង​នៅក្នុង​ចក្រវាល។ សូម​ក្រឡេក​មើល​ជុំវិញ​អ្នក ធម្មជាតិ​ទាំង​អស់​​ដែល​អ្នក​បាន​ឃើញ គឺ​ជា​ស្នាព្រះហស្ត​របស់​ព្រះ​ជាម្ចាស់។ ប៉ុន្តែ​ របស់​ដែល​ពិសេស​ជាង​គេ​បំផុត ​ដែល​ទ្រង់​បាន​បង្កើត​មក គឺ​មនុស្ស​ប្រុស និង​មនុស្ស​ស្រី​ដំបូង ដែល​មាន​ឈ្មោះ​ថា អ័ដាម និង អេវ៉ា។ ទ្រង់​បាន​បង្កើត​មនុស្ស​មក​ឲ្យ​ខុស​ប្លែក​ពី​សត្វ ដោយ​ប្រទាន​ឲ្យ​មនុស្ស​​មាន​លក្ខណៈ​ខ្លះដូច​ព្រះ​អង្គ ដូច​ជា​គំនិត​ប្រាជ្ញា អារម្មណ៍ ភាសា និង​សេចក្ដី​ស្រឡាញ់ជា​ដើម។ ព្រះ​ធ្វើ​ដូច្នេះ ដើម្បី​ឲ្យ​មនុស្ស​អាច​ស្គាល់​​និង​ស្រឡាញ់​ទ្រង់  ស្ដាប់និង​និយាយ​ជាមួយ​ទ្រង់ ធ្វើ​តាម​និង​បម្រើ​ទ្រង់។ ដូច្នេះ ការស្គាល់ និងការ​​ស្រឡាញ់​ព្រះ​ជាម្ចាស់ គឺ​ជា​គោលដៅដ៏​ធំជាង​គេបំផុត​​សម្រាប់​ជីវិត​មនុស្ស​យើង។ ព្រះ​ជាម្ចាស់​បាន​ប្រគល់​ឲ្យ​មនុស្ស​គ្រប់គ្រង​ និង​សោយរាជ្យ​លើពិភពលោក​នេះ។ ​កិច្ចការ​នេះ​មិន​ពិបាក​ទេ ពី​ព្រោះ​​កាល​ដើម​ដំបូង​​នោះ​គ្មាន​អំពើបាប ជំងឺ ​សេចក្ដី​ស្លាប់ ការ​ឈឺ​ចាប់ ការ​លែងលះ ការ​កុហក និង​ការ​សម្លាប់​គ្នានោះ​​ឡើយ។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី១ យើងឃើញអ័ដាម និងអេវ៉ាញញឹម ដោយសារពួកគាត់កំពុងរស់នៅក្នុងពន្លឺដ៏ល្អរបស់ព្រះ ហើយមានទំនាក់ទំនងល្អឥតខ្ចោះជាមួយគ្នា និងជាមួយព្រះជាម្ចាស់</div></p>
+            <div class="center-container"><p><strong>ប៉ុន្តែ​ តើមាន​អ្វី​បាន​កើត​ឡើង? ហេតុ​អ្វី​បាន​ជា​ពិភពលោក​សព្វ​ថ្ងៃនេះ​មិន​ដូច​ជា​គ្រា​ដំបូង​នោះ?</strong></p></div>
+        </div>
+    </div>
+
+    <div class="page" data-page="1-image">
+
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="1">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 1 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-1.jpeg" alt="Illustration 1">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div class="page" data-page="1">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="2">▶</button>
+            </div>
+
+            <h2>២ យើងទាំងអស់គ្នាបានបដិសេធព្រះជាម្ចាស់ ដែលជាព្រះមហាក្សត្រដ៏ពិត ហើយថែមទាំងបានចូលរួមក្នុងការបះបោរប្រឆាំងនឹងទ្រង់ផងដែរ។</h2>
+            <h3>ការបះបោររបស់អារក្សសាតាំង</h3>
+            <p>ជាដំបូង ​ទេវតា​ដ៏​ខ្លាំង​ពូកែ​មួយ ដែល​ឥឡូវ​យើង​ហៅ​ថា អារក្ស​សាតាំង បាន​បះបោរ​ប្រឆាំង​នឹង​ព្រះ​ជាម្ចាស់។ ​ទេវតាមួយ​ចំនួន​ទៀត​ក៏​បាន​ចូល​រួម​នឹង​សាតាំង​ដែរ ទេវតា​ទាំង​នេះ​បាន​ក្លាយ​ទៅ​ជា​​វិញ្ញាណ​អាក្រក់​ទាំង​ឡាយ ដែល​យើង​ហៅ​ថា ព្រាយបិសាច អារុក្ខអារក្ខ​អ្នក​តា​នោះ​ឯង។ ពួក​វាទាំង​អស់​​ជា​​សត្រូវ​នឹង​ព្រះ​ជាម្ចាស់ ហើយ​​​ប្រឆាំង​នឹង​ផែន​ការល្អ​​របស់​ទ្រង់​ជានិច្ច។ តែ​វិញ្ញាណ​កុហក​​បោកប្រាស់​ទាំង​នេះ ​មិន​អាច​យក​ឈ្នះ​លើ​ព្រះ​ជាម្ចាស់​បាន​ឡើយ ​ពី​ព្រោះ​ព្រះ​មាន​គ្រប់​អំណាច​ព្រះចេស្ដា។ ប៉ុន្តែ​ ពួក​វា​អាច​ប្រើ​អំណាច​របស់​វា​ ដើម្បី​​ព្យាយាម​ត្រួតត្រា​​លើ​មនុស្ស និង​របស់​ផ្សេងៗ​ ដែល​ព្រះ​បាន​បង្កើត​។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី២ យើងឃើញអារក្សសាតាំង និងបរិវាររបស់វាដែលបានដាច់ចេញពីព្រះ។ ពួកវាស្ថិតនៅក្នុងភាពងងឹត។ បាបរបស់ពួកវាប្រៀបដូចជាជញ្ជាំងដ៏ធំ ហើយខ្ពស់ខណ្ឌរវាងពួកវា និងព្រះជាម្ចាស់។</div></p>
+            <h3>ការបះបោររបស់ឪពុកម្តាយដំបូង</h3>
+            <p>ព្រះ​គម្ពីរ​​បានប្រាប់យើងទៀតថា អារក្ស​សាតាំងបាន​ល្បួង​អ័ដាម និង​អេវ៉ា ដែល​ជា​ឪពុក​ម្ដាយ​ដំបូង​របស់​យើង ឲ្យ​ចូល​រួម​ក្នុង​ការ​បះបោរ​​ទាស់​​នឹង​ព្រះ​ជាម្ចាស់។ វា​បាន​កុហក​ពួក​គាត់ថា ការ​​បះបោរ​ទាស់​នឹង​​ព្រះ​មិន​នាំ​ឲ្យ​មាន​សេចក្ដី​ស្លាប់ និងសេចក្ដី​វេទនា​ ដូច​ដែល​​ព្រះ​បាន​ព្រមាន​​មុន​នោះ​ទេ តែនឹង​​នាំ​ឲ្យ​មាន​ចំណេះ​ដឹង​ដូចជា​ព្រះ ​សុភមង្គល​ និង​អំណាច​វិញ។ ដូច្នេះ​​ អ័ដាម និង​អេវ៉ា​​​បាន​សម្រេច​ចិត្ត​ជឿ​តាមការ​កុហក​របស់​​សាតាំង​ ដោយ​ពួកគាត់​សង្ឃឹម​ថា ​​អាច​ធ្វើ​ជា​​ម្ចាស់​លើ​ខ្លួន ឯង។ តែ​តាម​ពិត​​ ពួក​គាត់​បាន​ប្រគល់​សិទ្ធិ​គ្រងរាជ្យ​​លើ​ផែនដី​នេះដល់​សាតាំង ហើយធ្លាក់ក្នុង​កណ្ដាប់​ដៃ​របស់វាវិញ។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី២ យើងឃើញមកុដនៅលើឪពុកម្តាយដំបូងរបស់យើង ហើយគាត់បានដាច់ចេញពីព្រះនៅក្នុងភាពងងឹតជាមួយសាតាំង។ អ័ដាម និងអេវ៉ាមិនញញឹម ដោយសារពួកគាត់លែងមានទំនាក់ទំនងល្អឥតខ្ចោះជាមួយព្រះទៀតហើយ។</div></p>
+            <h3>កូនចៅរបស់អ័ដាមទាំងអស់ត្រូវបានដាច់ចេញពីព្រះជាម្ចាស់</h3>
+            <p>សូម្បី​តែ​សព្វ​ថ្ងៃ​នេះ​ក្ដី មនុស្ស​គ្រប់ជាតិ​សាសន៍​ទាំង​អស់​មិន​​ចង់​ឲ្យ​ព្រះ​​ជាម្ចាស់​​គ្រប់គ្រង​លើ​ពួក​គេ​ទេ។ យើង​ម្នាក់ៗ​​ក៏​បាន​ចូល​រួម​នឹង​ការ​បះបោរ​របស់​សាតាំង​ដែរ។ ​យើង​បដិសេធ​មិន​ចង់​បាន​​ព្រះ​ជាម្ចាស់​​ធ្វើ​ជា​មហាក្សត្រ​លើ​យើង​ទេ ហេតុ​ដូច្នេះ​ហើយ​បាន​ជា​ពិភពលោក​​មាន​ពេញ​​ទៅ​ដោយសង្គ្រាម ការ​លែងលះ ការ​ផិតក្បត់ ការ​មិន​ស្ដាប់​បង្គាប់​ឪពុកម្ដាយ ការ​ថ្វាយ​បង្គំ​រូប​ចម្លាក់ ការ​ប្រមឹក ​និង​ការ​លោភលន់​ជាដើម។ អំពើ​បាប​ដ៏​អាក្រក់​​ជាង​គេ​របស់​យើង គឺ​យើង​​មិន​ព្រម​គោរព​ និងដឹង​គុណ​​ដល់​ព្រះ​ជាម្ចាស់​ឡើយ សូម្បីតែ​យើង​ដឹង​​ថា គឺទ្រង់​ហើយ ដែលបានបង្កើត​របស់​សព្វសារពើ​​ទាំង​អស់​មក​ក៏ដោយ។ យើង​ចង់​បាន​របស់​ដែល​ព្រះ​បាន​បង្កើត​មក​ ប៉ុន្តែ​មិន​ចង់​បាន​​ព្រះ​ដែល​បាន​បង្កើត​របស់​ទាំង​នោះ​ឡើយ។  អ្វី​ដែល​កាន់​តែ​អាក្រក់​ទៅទៀត​នោះ គឺ​យើង​យក​របស់​ដែល​ព្រះ​ជាម្ចាស់​បាន​បង្កើត​​មក ទៅ​សែន​ដល់​វិញ្ញាណ​អាក្រក់​ទាំង​ឡាយ ​ដែល​ជា​សត្រូវ​របស់​ព្រះ​ទៅវិញ។ ការ​បដិសេធ​​ព្រះជាម្ចាស់​​នេះ​ហើយ ដែល​ព្រះ​រាប់ថា «បាប»។ ឥឡូវនេះ​មនុស្ស​យើង​ស្ថិតនៅ​ក្នុង​ភាព​ងងឹត ដាច់​ចេញ​ពី​ព្រះ​ជាម្ចាស់ ហើយ​ស្ថិត​នៅ​ក្រោមការ​ត្រួតត្រា​របស់អារក្ស​សាតាំង និង​ពួក​បរិវារ​របស់​វា។</p>
+            <p>តើ​ព្រះ​មាន​បន្ទូល​​ដូចម្ដេចចំពោះ​យើង​ដែល​បាន​បះបោរ​ប្រឆាំង​នឹង​ទ្រង់? ទ្រង់​មាន​បន្ទូល​ថា <span class="em-strong-container">«គ្មាន​អ្នក​ណា​សុចរិត​សោះ សូម្បី​តែ​ម្នាក់​ក៏​គ្មាន​ផង គ្មាន​អ្នក​ណា​ដែល​យល់ គ្មាន​អ្នក​ណា​ដែល​ស្វែង​រក​ព្រះ គ្រប់​គ្នា​បាន​បែរ​ចេញ ហើយ​ត្រឡប់​ជា​ឥត​ប្រយោជន៍​ទាំង​អស់​គ្នា គ្មាន​អ្នក​ណា​ដែល​ប្រព្រឹត្ត​តាម​សេចក្ដី​សប្បុរស​សោះ តែ​ម្នាក់​ក៏​គ្មាន​ផង» (រ៉ូម ៣:១០-១២)</span></p>
+            <div class="center-container"><p><strong>តើព្រះជាម្ចាស់បណ្ដោយឲ្យការបះបោររបស់យើងនៅតែបន្តរហូតឬ?</strong></p></div>
+        </div>
+    </div>
+
+    <div class="page" data-page="2-image">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="2">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 2 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-2.jpeg" alt="Illustration 2">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3 -->
+    <div class="page" data-page="2">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="3">▶</button>
+            </div>
+
+            <h2>៣ ព្រះជាម្ចាស់នឹងបញ្ចប់ការបះបោរ ហើយដាក់ទោសដល់អ្នកបះបោរទាំងអស់។</h2>
+            <h3>ចម្លើយរបស់ស្តេចដ៏សុចរិត</h3>
+            <p>ប្រសិន​បើ​ស្ដេច​​មួយ​អង្គ​ជ្រាប​ថា​ មាន​ការ​បះបោរ ប៉ុន្តែ​​ទ្រង់​អត់​ចាត់ការ​អ្វី​សោះ នោះ​យើង​នឹង​​គិតថា ទ្រង់មិន​ស្រឡាញ់​ប្រទេសជាតិ ហើយមិនគោរព​អង្គ​ទ្រង់​ផ្ទាល់​​ឡើយ។ ​តែ​ព្រះ​ជាម្ចាស់​​​វិញ ទ្រង់​បាន​កាត់​ទោសអារក្ស​សាតាំង​ភ្លាមនៅ​ពេល​វាបះបោរ ដោយ​បណ្ដេញ​វា និង​ពួក​អារក្ស​របស់​វា ចេញ​ពី​ព្រះវត្តមាន​ទ្រង់​។ ព្រះ​ជា​ម្ចាស់​ក៏​បាន​​កាត់ទោស​ឪពុក​ម្ដាយ​ដំបូង​របស់​យើង​ភ្លាម​ដែរ នៅ​ពេល​ពួក​គាត់​ចូល​រួម​នឹង​​ការ​បះបោរ​​របស់​សាតាំង។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៣ យើងឃើញថា មនុស្សយើងរស់នៅក្នុងភាពងងឹត ដាច់ចេញពីព្រះជាម្ចាស់ដោយសារតែបាបរបស់ខ្លួន ហើយក៏ត្រូវស្ថិតក្រោមការត្រួតត្រាដ៏អាក្រក់របស់សាតាំងទៀតផង។ បាបរបស់យើងប្រៀបដូចជា ជញ្ជាំងដ៏ធំ ហើយខ្ពស់ខណ្ឌរវាងយើង និងព្រះជាម្ចាស់។</div></p>
+            <h3>លទ្ធផលនៃអំពើបាបរបស់យើង</h3>
+            <p>ការ​បះបោរ​របស់​យើង​ទាស់​នឹង​ព្រះ​ជាម្ចាស់​បាន​នាំ​មក​នូវ​ការ​ឈឺចាប់ និង​ការ​អាក្រក់​យ៉ាង​ច្រើន​​ដល់​ពិភពលោក​នេះ ព្រមទាំង​ការ​មើលងាយដល់​​ព្រះ​ជាម្ចាស់ទៀត។ ​​ដោយហេតុ​នោះហើយបាន​ជា​​ទ្រង់​ត្រូវ​តែ​ដាក់​ទោស ហើយ​ការ​ដាក់​ទោស​​ដែល​ព្រះ​បាន​​សម្រេច​​នោះ គឺ​​សម​​នឹង​បាប​ដែល​​យើង​បាន​ធ្វើ​​។ តើ​​សម​យ៉ាង​ម៉េច? នៅ​ពេល​យើង​បះបោរ គឺ​ប្រៀបដូច​ជា​យើង​និយាយ​ទៅ​កាន់​ព្រះ​ជាម្ចាស់​ថា «យើង​មិន​ព្រម​ឲ្យ​ទ្រង់​​សោយរាជ្យ​លើ​យើង​ទេ យើង​ចង់​គ្រប់គ្រង​ជីវិត​ដោយ​ខ្លួន​ឯង ចូរ​ថយចេញ​ឲ្យ​ឆ្ងាយ​ទៅ»។ ដូច្នេះ​​ ព្រះ​ប្រទាន​​តាម​ការ​​ទាមទារ​ចង់​បានរបស់យើង​​ គឺ​យើង​ដាច់​ចេញ​ពី​ព្រះ​ជារៀងរហូត។ ក៏ប៉ុន្តែ​ដោយ​ព្រោះ​ព្រះ​ជាម្ចាស់​ គឺ​ជា​ប្រភព​នៃ​ជីវិត និង​​ប្រភព​នៃ ការ​ល្អ​ទាំង​អស់ ដូច្នេះ​ការ​ដាច់​ចេញ​ពី​ព្រះ​ជាម្ចាស់ គឺនាំ​​ឲ្យ​សេចក្ដី​​ស្លាប់ និង​សេចក្ដី​វេទនា​ចូល​មក​ផែន​ដី ដូច​ដែល​ព្រះ​ជាម្ចាស់​បាន​​ព្រមាន​រួច​មក​ហើយ មិន​មែន​​នាំ​ឲ្យ​មាន​ប្រាជ្ញា ការ​អរ​សប្បាយ និង​សេរីភាព​ដូច​ដែល​សាតាំង​បានកុហក​​នោះ​ឡើយ។ ព្រះ​ជាម្ចាស់​តែងតែ​មាន​បន្ទូល​​ពិត​ជានិច្ច។ អ័ដាម និង​អេវ៉ា​បាន​បាត់​បង់​ទំនាក់ទំនង​ជិតស្និទ្ធ​ជាមួយ​​នឹង​ព្រះ​​ជាម្ចាស់​ភ្លាម។ ការ​ដាច់​ចេញ​ពី​ព្រះ​នេះ​ហើយ ​ជា​​សេចក្ដី​ស្លាប់​ពិត​ប្រាកដ ដែល​​នាំឲ្យ​រូបកាយ​​របស់​មនុស្ស​​លោក​គ្រប់​គ្នា​​​ត្រូវ​ស្លាប់​ដែរ។ មិនតែ​ប៉ុណ្ណោះ ​ចុង​ក្រោយ​​មនុស្ស​លោក​​ត្រូវ​​ទទួលទោស ដាច់​ចេញ​ពី​ព្រះ​អស់កល្ប​ជានិច្ច​នៅ​ក្នុង​ស្ថាននរក ។ ព្រះ​ជាម្ចាស់​បាន​បង្កើត​ស្ថាននរក​ ដើម្បី​ដាក់ទោស​អស់កល្ប ជានិច្ច​ចំពោះអារក្ស​សាតាំង និង​ពួក​បរិវារ​របស់​វា។ ប៉ុន្តែ​អស់​អ្នក​ណា​ដែល​ចូល​រួម​នឹង​ការ​បះបោរ​របស់​សាតាំង ក៏​នឹង​ត្រូវ​ទទួលទោសនៅ​កន្លែង​នោះ​ដែរ។ សេចក្ដី​សម្រេច​នេះ​យុត្តិធម៌​ណាស់។ ព្រះ​គម្ពីរ​ចែង​ថា ​ព្រះ​ជាម្ចាស់ <span class="em-strong-container">«បាន​តម្រូវ​ឲ្យ​មនុស្ស​ទាំង​អស់​ស្លាប់​១ដង  រួច​សឹម​ជាប់​សេចក្ដី​ជំនុំជម្រះ» (ហេព្រើរ ៩:២៧)</span></p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៣ យើងឃើញលទ្ធផល២នៃអំពើបាបរបស់មនុស្សយើង។ យើងត្រូវតែស្លាប់ ហើយពណ៌ក្រហម នៅក្នុងរូបភាពនេះតំណាងឲ្យស្ថាននរក។</div></p>
+            <div class="center-container"><p><strong>បើដូច្នេះ តើ​មាន​សេចក្ដី​សង្ឃឹម​សម្រាប់យើង​ដែល​ជា​អ្នក​បះបោរ​ដែរ​ឬ​ទេ? ប្រាកដ​ជាមាន!</strong></p></div>
+            <p>បន្ទាប់​ពី​អ័ដាម​ និង​អេវ៉ា​បាន​ធ្វើ​បាប ព្រះ​ជាម្ចាស់​បាន​សន្យា​ជា​​ច្រើន​កន្លែង​ក្នុង​ព្រះ​គម្ពីរ​ថា ថ្ងៃ​ណា​មួយ ​ទ្រង់​នឹងចាត់អ្នក​សង្គ្រោះ​ឲ្យ​មក ដើម្បី​បំផ្លាញ​អារក្ស​សាតាំង និង​ពួក​បរិវារ​របស់​វា រំដោះ​មនុស្ស​ចេញ​ពី​អំពើ​បាប និង​សេចក្ដីស្លាប់ ហើយ​នាំ​មនុស្ស​ត្រឡប់​មក​ឯ​ព្រះជាម្ចាស់​វិញ។</p>
+        </div>
+    </div>
+
+    <div class="page" data-page="3-image">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="3">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 3 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-3.jpeg" alt="Illustration 3">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page 4 -->
+    <div class="page" data-page="3">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="4">▶</button>
+            </div>
+
+            <h2>៤ ដោយសារព្រះជាម្ចាស់ស្រឡាញ់យើង ទ្រង់បានចាត់ព្រះរាជបុត្រាទ្រង់ឲ្យមកផែនដី ដើម្បីរំដោះយើងចេញពីបាប អារក្សសាតាំង និងសេចក្ដីស្លាប់។</h2>
+            <h3>ព្រះជាម្ចាស់បានយកកំណើតជាមនុស្ស</h3>
+            <p>ព្រះ​ជា​ម្ចាស់​មិន​បាន​បោះបង់​ចោល​យើង​ទៅ​តាម​អំពើ​បាប និង​ការ​បះបោរ​របស់​យើង​នោះ​ទេ។ នៅ​ក្នុង​ព្រះ​គម្ពីរ ទ្រង់​បាន​សន្យា​ម្ដងហើយ​ម្ដង​ទៀត​ថា នឹង​ចាត់​ស្ដេច​ដ៏​ពិត​មួយ​អង្គ​មក ដើម្បី​សង្គ្រោះ​យើង​​ពី​អំពើ​បាប​របស់ យើង។ កាល​ពី​​ជាង២០០០ឆ្នាំ​មុន ព្រះជាម្ចាស់​​បានចាត់​ព្រះ​រាជ​បុត្រា​របស់ទ្រង់​ដែល​​​ជា​​ព្រះ​អាទិករ ឲ្យ​​មក​ប្រសូត​​ជា​មនុស្ស​នៅ​ប្រទេស​អ៊ីស្រាអែល​ ដែល​ស្ថិតនៅ​ទ្វីប​អាស៊ី​​ខាងលិច។ ទ្រង់​មានព្រះ​​នាម​ថា «ព្រះយេស៊ូវ គ្រីស្ទ»។ «យេស៊ូវ» មាន​ន័យថា «ព្រះ​អង្គ​សង្គ្រោះ»។ «គ្រីស្ទ» ​សំដៅទៅ​លើ​តំណែង​របស់​ទ្រង់​ជា​ស្តេច​ ​ដែល​ព្រះ​បាន​សន្យា​​នឹង​ចាត់​មក ដើម្បី​សង្គ្រោះ​មនុស្ស​លោក។ យោងតាម​ព្រះ​គម្ពីរ​របស់​ព្រះ​ នេះ​គឺ​ជា​គោល​បំណង​របស់​ព្រះ​យេស៊ូវ​ក្នុង​ការ​យាង​មក​ផែន​ដី​នេះ គឺព្រះ​យេស៊ូវ​ <span class="em-strong-container">«បាន​មក ដើម្បី​នឹង​រក ហើយ​ជួយ​សង្គ្រោះ​ដល់​មនុស្ស​បាត់​បង់» (លូកា ១៩:១០)</span></p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៤ យើងឃើញព្រួញមួយដែលប្រាប់យើងថា ព្រះជាម្ចាស់បានចាត់ព្រះយេស៊ូវ ឲ្យយាងចុះមកក្នុងពិភពលោកនេះ។</div></p>
+            <h3>លក្ខណៈរបស់ព្រះយេស៊ូវ</h3>
+            <p>ព្រះ​យេស៊ូវ​បាន​ចុះចូល​នឹង​ការ​គ្រប់គ្រង​​របស់​ព្រះ​ជាម្ចាស់​ទាំង​ស្រុង មិន​ដែល​បះបោរ​ដូច​ជា​យើង​រាល់​គ្នា​ឡើយ។ ទ្រង់​ធ្វើ​តាម​សេចក្ដី​បង្គាប់​​ទាំង​អស់​របស់​ព្រះ​ជាម្ចាស់​ ដែល​យើង​​​តែងតែ​បាន​រំលង ដូចជាកុំ​ឲ្យ​​ថ្វាយ​បង្គំ​រូប​ចម្លាក់​ឲ្យ​សោះ ត្រូវ​ស្ដាប់​បង្គាប់​ឪពុកម្ដាយ ត្រូវ​ស្រឡាញ់​ព្រះ​ឲ្យ​អស់​ពី​ចិត្ត កុំ​ឲ្យ​កុហក​ឲ្យ​សោះ កុំ​លួច​ឲ្យ​សោះ កុំ​សម្លាប់​មនុស្ស​ឲ្យ​សោះ កុំ​ផិត​ក្បត់​ឲ្យ​សោះ និង​កុំ​លោភលន់​ឲ្យ​សោះ។ ព្រះយេស៊ូវ​មិន​ដែល​ធ្វើ​បាប​​ឡើយ សូម្បី​តែ​បាប​តូច​មួយ។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៤ យើងឃើញព្រះយេស៊ូវគង់នៅក្នុងពន្លឺនៃព្រះជាម្ចាស់គ្រប់ពេលវេលា មិនដែលរស់នៅក្នុងភាពងងឹតនៃអំពើបាបឡើយ។</div></p>
+            <h3>អំណាចព្រះចេស្ដារបស់ព្រះយេស៊ូវ</h3>
+            <p>នៅ​ពេល​យើង​អាន​អំពី​ឆាក​ជីវិត​របស់​ព្រះយេស៊ូវ​នៅ​ក្នុង​​ព្រះ​គម្ពីរ​បរិសុទ្ធ យើង​ឃើញ​ថា ទ្រង់​មាន​សិទ្ធិ​​អត់​ទោស​​បាប​ដល់​​មនុស្ស។ ទ្រង់​​ក៏​បាន​សម្ដែង​​ព្រះ​ចេស្ដា​របស់​ទ្រង់​​លើ​ជំងឺ និង​សេចក្ដី​ស្លាប់ ដោយ​ប្រោស​មនុស្ស​​ឈឺ​ឲ្យ​បានជា​ឡើង​វិញ ហើយ​ថែម​ទាំង​​ប្រោស​មនុស្ស​​​ស្លាប់ឲ្យ​បាន​រស់​ពី​ស្លាប់​ឡើង​វិញផងដែរ។ ទ្រង់​បាន​សម្ដែង​​ ព្រះ​ចេស្ដា​របស់​ទ្រង់​លើ​ពួក​អារក្ស ហើយ​និង​ធម្មជាតិ។ ហេតុ​អ្វី​បាន​ជា​ពួក​អារក្ស ​ធម្មជាតិ ព្រម​ទាំង​សេចក្ដី​ស្លាប់​ផង​ ត្រូវស្ដាប់​បង្គាប់​ទ្រង់​ដូច្នេះ? ពី​ព្រោះ​ព្រះ​យេស៊ូវ​​ គឺ​ជា​អ្នកបង្កើត​ពិភពលោក ដែល​បាន​យាង​មក​ផែន​ដី​នេះ ដើម្បី​សង្គ្រោះ​យើង។ គ្រប់​របស់​សព្វសារពើ និងមនុស្ស​ទាំង​អស់​ត្រូវ​តែ​ស្ដាប់​បង្គាប់​ទ្រង់​។</p>
+            <div class="center-container"><p><strong>តើព្រះយេស៊ូវអាចសង្គ្រោះយើង ដែលមានពេញដោយអំពើបាបបានយ៉ាងដូចម្តេច?</strong></p></div>
+        </div>
+    </div>
+
+    <div class="page" data-page="4-image">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="4">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 4 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-4.jpeg" alt="Illustration 4">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 5 -->
+    <div class="page" data-page="4">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="5">▶</button>
+            </div>
+
+            <h2>៥ ព្រះយេស៊ូវបានលោះយើង ដោយសុគតជំនួសយើង។</h2>
+            <h3>ផែនការរបស់មនុស្ស</h3>
+            <p>នៅ​ពេល​​ព្រះ​យេស៊ូវ​មាន​ព្រះជន្ម​ប្រហែល​ជា​៣៣ឆ្នាំ នោះ​ទ្រង់​បាន​បណ្ដោយ​​ឲ្យ​​មនុស្ស​អាក្រក់​ចាប់​ទ្រង់ ហើយ​ធ្វើ​គុត​ទ្រង់​នៅ​លើ​ឈើ​ឆ្កាង។ ហេតុ​អ្វី​បាន​ជា​ព្រះ​យេស៊ូវ​ដែល​គ្មាន​បាប​សោះ ត្រូវ​សុគត ​ហើយ​ដាច់​ចេញ​ពីព្រះ​នៅ​ក្នុង​ភាព​ងងឹត​​ដូច្នេះ? គឺ​យើង​ទេដែលសម​នឹង​ទទួល​ការ​នោះ ចុះហេតុអ្វី​​បាន​ជា​ព្រះយេស៊ូវ​​ទទួលទៅ​វិញ?</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៥ យើងឃើញព្រះយេស៊ូវនៅក្នុងភាពងងឹត ហើយដាច់ចេញពីព្រះជាម្ចាស់ ដូចជាឪពុកម្តាយដំបូងរបស់យើងនៅក្នុងរូបភាពទី២។</div></p>
+            <h3>ផែនការរបស់ព្រះជាម្ចាស់</h3>
+            <p>ចម្លើយ​ដ៏​អស្ចារ្យ​​គឺ ព្រះ​យេស៊ូវ​បាន​​សុគតជំនួស​យើង ដើម្បី​សង្គ្រោះ​យើងតាម​​ផែនការ​របស់ព្រះ​ជាម្ចាស់​! នៅ​លើ​ឈើ​ឆ្កាង​ ព្រះ​យេស៊ូវ​​សុខ​ចិត្ត​លះបង់​​ព្រះជន្ម​ទ្រង់​ទទួល​យក​គ្រប់​ទាំង​ការ​ដាក់​ទោស​ពី​ព្រះ​ជាម្ចាស់​ ដែល​យើង​សម​នឹង​ទទួល ​ដោយ​សារ​បាប​របស់​យើង។ ព្រះ​យេស៊ូវ​ដ៏​សុចរិត​បាន​​ទទួល​ទោស​ជំនួស​មនុស្ស​ទុច្ចរិត ដូច​ជាយើង។ នៅ​លើ​ឈើ​ឆ្កាង ​ព្រះយេស៊ូវ​បានទទួលការ​ដាច់​ចេញ​ពី​ព្រះ​ជាម្ចាស់​​ជំនួស​យើង ដើម្បី​កុំ​​ឲ្យ​យើង​ត្រូវ​ដាច់​ចេញ​ពីព្រះ​ជាម្ចាស់​ទៅក្នុងស្ថាននរកជារៀង​រហូត​នោះ​ឡើយ។ នៅ​លើ​ឈើ​ឆ្កាង ព្រះយេស៊ូវ​បាន​យក​ឈ្នះ​​លើ អំពើ​បាប សេចក្ដី​​ស្លាប់ និង​​អារក្ស​សាតាំង​ ដោយ​ការ​សង​​ថ្លៃ​ទោស​នៃអំពើ​បាប​ជំនួស​​យើង​។ ទ្រង់​បានរុះ​​​ជញ្ជាំង​ចេញ គឺ​ជាជញ្ជាំងនៃ​អំពើ​បាប​របស់​យើង​ ដោយ​​យក​បាប​ទាំង​អស់​នោះ​មក​ដាក់​លើ​អង្គ​ទ្រង់​ផ្ទាល់ ដើម្បី​ឲ្យ​យើង​ត្រឡប់​មកឯ​​ព្រះ​ជាម្ចាស់​បាន​។ ទ្រង់​ធ្វើ​ការ​ទាំង​អស់​នេះ​ដោយ​ព្រោះ​តែ​សេចក្ដី​ស្រឡាញ់​​ដ៏​ធំ​ក្រៃលែង​​របស់​ទ្រង់​ចំពោះ​យើង។</p>
+            <p>ព្រះជាម្ចាស់​មាន​បន្ទូលយ៉ាង​ច្បាស់​​ក្នុង​ព្រះ​គម្ពីរថា <span class="em-strong-container">«ព្រះ​គ្រីស្ទ​ទ្រង់​បាន​រង​ទុក្ខ​ម្ដង ដោយ​ព្រោះ​បាប​ដែរ គឺ​ជា​ព្រះ​ដ៏ សុចរិត ទ្រង់​រងទុក្ខ​ជំនួស​មនុស្ស​ទុច្ចរិត ដើម្បី​នឹង​នាំ​យើង​រាល់​គ្នា​ទៅ​ដល់​ព្រះ» (១ពេត្រុស ៣:១៨)</span></p>
+            <p>ក្រោយពីព្រះយេស៊ូវបានសុគត ពួកអ្នកដែលស្រឡាញ់ទ្រង់បានបញ្ចុះសពទ្រង់ក្នុងផ្នូរ។</p>
+            <div class="center-container"><p><strong><div class="center-container">តើ​​ដំណើររឿង​បាន​ចប់​ត្រឹម​នោះ​ឬ? ប្រសិនបើព្រះយេស៊ូវ ជាស្តេច ​​នៅ​តែ​សុគត​រហូត តើទ្រង់អាច​សង្គ្រោះ​យើង​ពី​ទោស​នៃអំពើ​បាប​របស់​យើង ​និង​​ផ្សះផ្សាយើង​ជាមួយ​នឹង​ព្រះ​ជាម្ចាស់​បាន​ដែរ​ឬ​ទេ?</div></strong></p></div>
+        </div>
+    </div>
+
+    <div class="page" data-page="5-image">
+
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="5">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 5 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-5.jpeg" alt="Illustration 5">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 6 -->
+    <div class="page" data-page="5">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="6">▶</button>
+            </div>
+
+            <h2>៦ ព្រះយេស៊ូវបានយកជ័យជម្នះលើសេចក្ដីស្លាប់ ដោយទ្រង់រស់ពីសុគតឡើងវិញ។ ទ្រង់គឺជាមហាក្សត្រដ៏ពិតនៃពិភពលោកនេះ ហើយទ្រង់នឹងយាងមកផែនដីម្ដងទៀត ដើម្បីជំនុំជម្រះមនុស្សលោកទាំងអស់។</h2>
+            <h3>ព្រះយេស៊ូវបានរស់ពីសុគតឡើងវិញ ហើយមានជ័យជម្នះលើសេចក្តីស្លាប់</h3>
+            <p>មុន​ព្រះ​​យេស៊ូវ​សុគត ទ្រង់​​បាន​ប្រាប់​ពួកសិស្ស​​ទ្រង់​​ជា​ច្រើន​ដង​ថា មនុស្ស​អាក្រក់​នឹង​ធ្វើ​គុត​ទ្រង់ តែ​បី​ថ្ងៃ​ក្រោយមក​ ទ្រង់​នឹងរស់​​ពី​សុគតឡើង​វិញ។ ព្រះ​ជាម្ចាស់​មិន​ដែល​កុហក​ឡើយ។ ​គឺពិត​ណាស់​ ​បី​ថ្ងៃ​ក្រោយមក ព្រះ​បាន​ប្រោសព្រះកាយ​​ព្រះ​យេស៊ូវ​ឲ្យ​មាន​ព្រះ​ជន្ម​រស់​ឡើង​វិញមែន ដើម្បី​​បង្ហាញ​ថា ព្រះ​យេស៊ូវ​បាន​ឈ្នះ​លើ សេចក្ដី​ស្លាប់​ និង​​​អារក្ស​សាតាំង ហើយ​​​បាន​សង​​ថ្លៃ​ទោស​នៃ​អំពើ​បាបរបស់​យើង​​​រួចរាល់​ហើយ។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៦ យើងឃើញព្រះយេស៊ូវមិនដាច់ចេញពីព្រះជាប់ក្នុងភាពងងឹតទៀតទេ ផ្ទុយនឹងរូបភាពទី៥។</div></p>
+            <h3>ព្រះយេស៊ូវបានត្រឡប់ទៅស្ថានសួគ៌វិញ</h3>
+            <p>ក្រោយពីរស់ឡើងវិញ ព្រះយេស៊ូវ​បាន​បង្ហាញ​អង្គ​ទ្រង់​ដល់​សាក្សីរាប់រយ​នាក់ ហើយ​បាន​បង្រៀន​ពួក​សិស្សរយៈ​ពេល​៤០ថ្ងៃ​ទៀត។ បន្ទាប់​មក​ទ្រង់​ត្រឡប់​ទៅ​គង់​នៅ​លើ​បល្ល័ង្ក​របស់​ទ្រង់​​នៅ​ឯ​ស្ថានដ៏ខ្ពស់បំផុត។</p>
+            <p><div class="strong-container">នៅក្នុងរូបភាពទី៦ យើងឃើញព្រះយេស៊ូវនៅស្ថានសួគ៌មានពាក់មកុដគឺជាស្តេច។</div></p>
+            <h3>ព្រះយេស៊ូវនឹងយាងមកផែនដីនេះម្តងទៀត ដើម្បីជំនុំជម្រះពិភពលោក</h3>
+            <p>មុន​ពេល​ទ្រង់​​យាង​ត្រឡប់​មក​វិញ​ ដំណឹង​ល្អ​អំពី​ការ​សុគត ការ​រស់​ឡើង​វិញ និង​ការសោយរាជ្យ​​របស់​ព្រះ​យេស៊ូវ ត្រូវ​ប្រកាស​ដល់​គ្រប់​​ប្រទេស និង​គ្រប់​ភាសា។ ព្រះ​យេស៊ូវបាន​បង្គាប់​​ដល់​មនុស្ស​គ្រប់​ជាតិសាសន៍​ឲ្យ​កែ​ប្រែ​ចិត្ត​ពី​​បាប​របស់​ខ្លួន ហើយ​ជឿ​​ទុក​ចិត្ត​លើ​ទ្រង់។ ប្រសិន​បើ​អ្នក​​ត្រឡប់​មក​ចុះចូល​ចំពោះ​ទ្រង់ ហើយ​ជឿទុក​ចិត្ត​លើ​​ទ្រង់ នោះ​​ទ្រង់​នឹង​​អត់​ទោស​បាបទាំងអស់របស់​អ្នក ប្រទាន​ជីវិត​អស់កល្ប​ជានិច្ច​​ដល់​អ្នក ប្រទានអ្នកឲ្យបាន ត្រឡប់​ជា​កូន​របស់​ព្រះ​ជាម្ចាស់​ ហើយនឹងប្រទានឲ្យអ្នក​ចូល​ក្នុង​ក្រុមគ្រួសារ​របស់ទ្រង់ផងដែរ។ ព្រះ​វិញ្ញាណ​បរិសុទ្ធ​នៃ​ព្រះ​នឹង​យាង​មក​គង់​ក្នុង​អ្នក ហើយ​នឹង​មិន​ចាកចេញ​ពី​អ្នក​ឡើយ។ សាតាំង និង​ពួកអារក្ស​របស់​វានឹង​មិន​អាច​ត្រួតត្រា​លើ​អ្នក​​ទៀត​បាន​ឡើយ។ ហើយ​នៅ​ពេល​ព្រះគ្រីស្ទ​យាង​មក​ជំនុំជម្រះ​មនុស្ស​លោក នោះ​អ្នកក៏​នឹង​បាន​សង្គ្រោះ​រួច​ពី​សេចក្ដី​ក្រោធ​របស់​​​ព្រះ​ជាម្ចាស់ដែរ។​ មនុស្ស​​បះបោរ​មិន​សមនឹង​ទទួល​សេចក្ដី​ស្រឡាញ់ និង​សេចក្ដី​សង្គ្រោះ​បែប​​នេះទេ។ អ្នក​គ្មាន​បុណ្យ​កុសល​ល្មម ដើម្បី​ដោះដូរ​យក​ការ​អត់ទោស និង​ជីវិតអស់​កល្ប​នោះ​ឡើយ។ នោះ​ហើយ​ជា​មូលហេតុ​ដែល​ព្រះ​ជាម្ចាស់​ប្រទាន​សេចក្ដី​សង្គ្រោះ​​ជា​អំណោយ​ទទេ​ដល់​អ្នក ពីព្រោះ​ទ្រង់​ស្រឡាញ់​អ្នក។ ដោយសារ​ព្រះ​យេស៊ូវ​​បាន​រស់​ពី​សុគត​ឡើង​វិញ ព្រះ​គម្ពីរ​បាន​ចែង​ថា <span class="em-strong-container">«ទ្រង់​បាន​បង្កើត​យើង​ឡើង​ជា​ថ្មី តាម​សេចក្ដី​មេត្តាករុណា​ដ៏​ធំ​របស់​ទ្រង់ ដើម្បី​ឲ្យ​យើង​រាល់​គ្នា​បាន​សេចក្ដី​សង្ឃឹម​ដ៏​រស់ ដោយសារ ព្រះយេស៊ូវគ្រីស្ទ ទ្រង់​រស់​ពី​ស្លាប់​ឡើង​វិញ» (១ពេត្រុស ១:៣)</span></p> <!--reference already ok-->
+            <div class="center-container"><p><strong>ដំណឹង​ល្អ​នេះ​នាំ​​អ្នក​មក​ដល់​ផ្លូវ​បំបែកដ៏​ធំ​ក្នុង​ជីវិត​អ្នក។</strong></p></div> <!--this is the thing to bold and center-->
+        </div>
+    </div>
+
+    <div class="page" data-page="6-image">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="6">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 6 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-6.jpeg" alt="Illustration 6">
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 7 -->
+    <div class="page" data-page="6">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="7">▶</button>
+            </div>
+
+            <h2>៧ មានផ្លូវតែពីរ ដែលអ្នកត្រូវជ្រើសរើស ៖ ផ្លូវនៃសេចក្ដីស្លាប់ ឬផ្លូវនៃជីវិត</h2>
+            <h3>ផ្លូវនៃសេចក្ដីស្លាប់</h3>
+            <p>អស់អ្នកដែល​បដិសេធ​មិន​ព្រម​ទទួល​យក​ព្រះ​ជា​ម្ចាស់ឲ្យ​ធ្វើ​ជា​ស្ដេច​របស់​ខ្លួន ហើយនៅ​តែចង់​គ្រប់​គ្រង​​លើ​ជីវិត​​ដោយ​ខ្លួន​ឯង គឺជាអ្នកដែលជ្រើសរើសផ្លូវនៃសេចក្តីស្លាប់។ ប៉ុន្តែ​ ផ្លូវ​នេះ​មិន​ត្រឹម​តែ​នាំ​មក​នូវ​សេចក្ដី​ទុក្ខ​ព្រួយ និង​សេចក្ដី​វេទនា​ដល់​ជីវិត​​របស់​អ្នក​ប៉ុណ្ណោះ​ទេ គឺ​ធ្វើ​ឲ្យ​អ្នក​ស្ថិត​នៅ​ក្រោម​ការត្រួតត្រា​​របស់អារក្ស​សាតាំង ហើយ​ចុង​បំផុត​នៃ​ផ្លូវ​នេះ​ គឺ​ជា​សេចក្ដី​ស្លាប់ និងការ​ដាច់​​ចេញ​ពី​ព្រះ​ជាម្ចាស់​អស់កល្ប​ជានិច្ច​ទៅ​ក្នុង​ស្ថាននរក។</p>
+            <p><div class="strong-container">នៅខាងឆ្វេងនៃរូបភាពទី៧ យើងឃើញមនុស្សនៅក្នុងភាពងងឹត ដាច់ចេញពីព្រះ ហើយពាក់មកុដខ្លួនឯង។ យើងក៏ឃើញចុងបញ្ចប់នៃផ្លូវនេះ គឺជាសេចក្តីស្លាប់ខាងវិញ្ញាណនៅក្នុងស្ថាននរក ដាច់ចេញពីព្រះជាម្ចាស់។</div></p>
+            <h3>ផ្លូវនៃជីវិត</h3>
+            <p>ប៉ុន្តែ​​ ដំណឹងល្អ​​របស់​ព្រះ​យេស៊ូវ​នាំ​ឲ្យ​​មាន​ជម្រើស​មួយ​ទៀត។ បើ​​អ្នក​ចុះចូលចំពោះ​ព្រះ​ជាម្ចាស់ ដែល​ជាស្តេច​ដ៏​ពិត​​លើ​ផែនដី​នេះ​ ហើយ​ទុកចិត្តជឿ​លើ​​ព្រះ​យេស៊ូវ​គ្រីស្ទ​ នោះ​​ព្រះ​ជាម្ចាស់​​សន្យា​នឹង​​អត់​ទោស​គ្រប់​​ទាំង​អំពើ​បាប​របស់​អ្នក​ ទាំង​បាបពី​អតីតកាល បច្ចុប្បន្ន​កាល និង​អនាគតកាល ហើយ​និង​រំដោះ​អ្នក​ចេញ​ពី​អំណាច​របស់​អារក្ស​សាតាំង ព្រមទាំង​​ប្រទាន​អំណោយ​នៃ​ជីវិត​អស់កល្ប​ជានិរន្ត្រ៍​ជា​មួយ​នឹង​ព្រះ​ជា​ម្ចាស់ផង​ដែរ។  ​កុំ​​សង្ឃឹម​ថា​ អ្នក​អាច​សង​ទោស​នៃ​អំពើ​បាប​របស់​អ្នក​ដោយ​សារ​បុណ្យ​កុសល​របស់​អ្នក​នោះ​ឡើយ។ មនុស្ស​​មានបាបប្រៀបដូចជាអ្នកកំពុង​លង់​ទឹក ដែលមិន​អាច​សង្គ្រោះ​ខ្លួន​ឯង​បាន​ទេ គឺ​ត្រូវ​ការ​អ្នក​សង្គ្រោះ។ មាន​តែ​ព្រះយេស៊ូវ​មួយ​អង្គ​​គត់​ដែល​​សន្យា​ថា នឹង​សង្គ្រោះ​អ្នក​ចេញ​ពី​បាប សេចក្ដី​ស្លាប់ អារក្ស​ និង​ស្ថាននរក។ ចូរ​កែប្រែ​ចិត្ត​​ពីអំពើ​​បាប និង ការ​បះបោរ​របស់​អ្នក​ ហើយ​ត្រឡប់​មក​ជឿ​លើ​ព្រះយេស៊ូវ​គ្រីស្ទ​វិញ នោះ​ទ្រង់​នឹង​សង្គ្រោះ​អ្នក។</p>
+            <p><div class="strong-container">នៅខាងស្តាំនៃរូបភាពទី៧ យើងឃើញមនុស្សកំពុងលុតជង្គង់ចំពោះព្រះយេស៊ូវដោយបន្ទាបខ្លួន  រស់នៅក្នុងពន្លឺនៃព្រះ ហើយព្រះយេស៊ូវពាក់មកុដ។</div></p>
+            <p>ព្រះជាម្ចាស់មានបន្ទូលយ៉ាងច្បាស់លាស់ក្នុងព្រះគម្ពីរថា <span class="em-strong-container">«ឯ​អ្នក​ណា​ដែល​ជឿ​ដល់​ព្រះ‌រាជ‌បុត្រា នោះ​មាន​ជីវិត​ដ៏​នៅ​អស់​‌កល្ប​ជានិច្ច​ហើយ តែ​អ្នក​ណា​ដែល​មិន​ព្រម​ជឿ​ដល់​ព្រះ‌រាជ‌បុត្រា​វិញ នោះ​នឹង​មិន​ឃើញ​ជីវិត​សោះ​ឡើយ គឺ​សេចក្ដី​ក្រោធ​របស់​ព្រះតែង​នៅ​ជាប់​លើ​អ្នក​នោះឯង» (យ៉ូហាន ៣:៣៦)</span></p>
+            <div class="center-container"><p><strong>តើអ្នកអាចផ្សះផ្សានឹងព្រះជាម្ចាស់ឥឡូវនេះបានដោយរបៀបណា?</strong></p></div>
+        </div>
+    </div>
+
+    <div class="page" data-page="7-image">
+        <div class="content" data-lang="km">
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="7">▶</button>
+            </div>
+
+            <!-- IMAGE after Page 7 -->
+            <div class="content image-content">
+                <img src="https://onlytwopaths.net/signal-7t.jpeg" alt="Illustration 7">
+            </div>
+        </div>
+    </div>
+  <div class="page" data-page="7">
+        <div class="content" data-lang="km">
+
+            <div class="center-container">
+                <button class="play-audio-btn page-play-trigger" data-track="8">▶</button>
+            </div>
+
+            <h2>សេចក្តីអញ្ជើញឲ្យជ្រើសរើសផ្លូវនៃជីវិត</br>ចូរប្រែចិត្តពីអំពើបាបរបស់អ្នក ហើយទុកចិត្តជឿលើព្រះយេស៊ូវចុះ។</h2>
+
+            <h3>តើពាក្យ «ការប្រែចិត្តពីអំពើបាបរបស់អ្នក» មានន័យយ៉ាងដូចម្ដេច?</h3>
+
+            <div class="hanging-indent"><p>១	មានន័យថា អ្នកឈប់បះបោរប្រឆាំងនឹងព្រះជាម្ចាស់ ដោយចុះចូលនឹងទ្រង់ ដែលជាព្រះមហាក្សត្រ និងព្រះអម្ចាស់របស់អ្នកវិញ។</p></div>
+            <div class="hanging-indent"><p>២	មានន័យថា អ្នកទទួលស្គាល់ថា អ្នកគ្មានគុណសម្បត្តិអ្វី ដែលអ្នកអាចថ្វាយដល់ព្រះជាម្ចាស់ ដើម្បីឲ្យទ្រង់ទទួលយកអ្នកនោះឡើយ។</p></div>
+            <div class="hanging-indent"><p>៣	មានន័យថា អ្នកទទួលស្គាល់ថា អំពើបាបក្នុងខ្លួនអ្នកអាក្រក់ណាស់ ដែលពិតជានឹងបំផ្លាញអ្នក ហើយបំបែកអ្នកចេញពីព្រះទៅក្នុងស្ថាននរកអស់កល្បជានិច្ច។</p></div>
+
+            <h3>តើពាក្យ «ការទុកចិត្តជឿលើព្រះយេស៊ូវ» មានន័យយ៉ាងដូចម្ដេច?</h3>
+
+            <div class="hanging-indent"><p>១	មានន័យថា អ្នកជឿថា ព្រះយេស៊ូវជាព្រះមហាក្សត្រ គឺជាព្រះអម្ចាស់នៃពិភពលោកទាំងមូល។</p></div>
+            <div class="hanging-indent"><p>២	មានន័យថា អ្នកជឿថា ព្រះយេស៊ូវបានសងថ្លៃអំពើបាបគ្រប់យ៉ាងរបស់អ្នកនៅលើឈើឆ្កាង ហើយទ្រង់ក៏បានរស់ពីសុគតឡើងវិញ ដើម្បីផ្សះផ្សាអ្នកជាមួយនឹងព្រះជាម្ចាស់ផងដែរ។</p></div>
+            <div class="hanging-indent"><p>៣	មានន័យថា អ្នកជឿថា ព្រះយេស៊ូវជាផ្លូវតែមួយគត់ ដែលអាចសង្គ្រោះអ្នកឲ្យរួចពីបាបបាន។</p></div>
+
+            <h3>បើអ្នកប្រែចិត្ត ហើយទុកចិត្តជឿលើព្រះយេស៊ូវ តើអ្វីទៅជាជំហានបន្ទាប់?</h3>
+
+            <div class="hanging-indent"><p>១	អ្នកនឹងសម្តែងជំនឿថ្មីដោយទទួលពិធីជ្រមុជទឹកនៅមុខក្រុមជំនុំតាមបទបញ្ជារបស់ព្រះយេស៊ូវ។</p></div>
+            <div class="hanging-indent"><p>២	អ្នកនឹងថ្វាយបង្គំព្រះជាម្ចាស់ជាមួយនឹងអ្នកជឿឯទៀតៗ ហើយនឹងប្រុងក្លាយជាសមាជិកនៃក្រុមជំនុំមួយ ដែលជាគ្រួសារថ្មីរបស់អ្នក។</p></div>
+            <div class="hanging-indent"><p>៣	អ្នកនឹងចំណាយពេលជាមួយព្រះជារៀងរាល់ថ្ងៃ តាមរយៈការអាននិងការពិចារណាលើព្រះបន្ទូលរបស់ព្រះ ហើយនឹងការអធិស្ឋាន។</p></div>
+            <div class="hanging-indent"><p>៤	អ្នកនឹងចាប់ផ្តើមស្តាប់បង្គាប់ព្រះយេស៊ូវ ជាស្ដេចថ្មីរបស់ខ្លួន ដោយគោរពតាមគ្រប់ទាំងព្រះបន្ទូលនៃព្រះនៅក្នុងព្រះគម្ពីរ ជាពិសេស បទបញ្ជាសំខាន់បំផុតពីរគឺ «ត្រូវឲ្យស្រឡាញ់ព្រះអម្ចាស់ ជាព្រះនៃឯងឲ្យអស់អំពីចិត្ត» និង «ត្រូវឲ្យស្រឡាញ់អ្នកជិតខាងដូចខ្លួនឯង»។ (ម៉ាថាយ ២២ៈ៣៧-៣៩)</p></div>
+        </div>
+  </div>
+
+    <div class="page" data-page="8-image">
+        <div class="content" data-lang="km">
+
+            <!-- IMAGE after Page 7 -->
+            <div class="content">
+                <table class="invisible-table">
+            <tr><td><div class="center-container"><img src="https://onlytwopaths.net/otplogo.png" alt="OTP Logo"></div></td></tr>
+                <tr><td><p><div class="center-container">ខគម្ពីរដកស្រង់ចេញពី ពគប ១៩៥៤ សមាគមព្រះគម្ពីរកម្ពុចា</br>កែសម្រួលដោយមានការអនុញ្ញាតពី J.D. Crowley និង ង៉ែត សារិទ្ធ</br>© រក្សាសិទ្ធិ ២០២៥ </div></p></td></tr>
+                <tr><td><p><div class="center-container"><a href="https://www.youtube.com/channel/UC1Xgo1D7cunaJuFgMWXj0pw">បើចាប់អារម្មណ៍មើលវីដេអូបន្ថែម (យូធូប)</a></div></p></td></tr>
+
+            </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn">←</button>
+        <button class="nav-btn" id="nextBtn">→</button>
+    </div>
+    <audio id="globalAudio" preload="none"></audio>
+
+
+    <script>
+(function(){
+    const player = document.getElementById('globalAudio');
+    const globalPlayBtn = document.getElementById('globalPlayBtn');
+    const skipBackBtn = document.getElementById('skipBackBtn');
+    const skipForwardBtn = document.getElementById('skipForwardBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const audioControls = document.getElementById('audioControls');
+    
+    let currentLang = 'km';
+    let currentPageIndex = 0;
+    
+    const trackMap = {
+        km: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8], // Adjust based on your pages
+    };
+
+    function getCurrentTrack() {
+        return trackMap[currentLang][currentPageIndex];
+    }
+
+    function loadCurrentTrack() {
+        const track = getCurrentTrack();
+        if (track) {
+            const src = `https://onlytwopaths.net/thai${track}.mp3`;
+            if (player.src !== src) {
+                const wasPlaying = !player.paused;
+                player.src = src;
+                if (wasPlaying) {
+                    player.play().catch(console.error);
+                }
+            }
+        }
+    }
+
+    function updateGlobalButtonText() {
+        const texts = {
+            km: { play: '▶', pause: '▶' },
+        };
+        const text = texts[currentLang];
+        globalPlayBtn.textContent = player.paused ? text.play : text.pause;
+    }
+
+// Remove the document-level click listener for .page-play-trigger
+// Instead, add it once with proper cleanup
+
+const handlePlayClick = (e) => {
+    const btn = e.target.closest('.page-play-trigger');
+    if (!btn) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    audioControls.style.display = 'flex';
+    loadCurrentTrack();
+    
+    player.play().catch(err => {
+        console.warn('Play failed:', err);
+    });
+};
+
+// Add once
+document.addEventListener('click', handlePlayClick, { passive: false });
+    // Global play/pause button
+    globalPlayBtn.addEventListener('click', () => {
+        if (!player.src) {
+            loadCurrentTrack();
+        }
+
+        if (player.paused) {
+            player.play().then(() => {
+                globalPlayBtn.classList.add('is-playing');
+                updateGlobalButtonText();
+            }).catch(console.error);
+        } else {
+            player.pause();
+            globalPlayBtn.classList.remove('is-playing');
+            updateGlobalButtonText();
+        }
+    });
+
+    // Skip backward 15 seconds
+    skipBackBtn.addEventListener('click', () => {
+        if (player.src) {
+            player.currentTime = Math.max(0, player.currentTime - 15);
+        }
+    });
+
+    // Skip forward 15 seconds
+    skipForwardBtn.addEventListener('click', () => {
+        if (player.src) {
+            player.currentTime = Math.min(player.duration, player.currentTime + 15);
+        }
+    });
+
+    // Restart button
+    restartBtn.addEventListener('click', () => {
+        if (player.src) {
+            player.currentTime = 0;
+        }
+    });
+
+    // Audio event listeners
+    player.addEventListener('ended', () => {
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
+    });
+    
+    player.addEventListener('pause', () => {
+        globalPlayBtn.classList.remove('is-playing');
+        updateGlobalButtonText();
+    });
+
+    player.addEventListener('play', () => {
+        updateGlobalButtonText();
+    });
+
+    // Listen for page changes
+    document.addEventListener('pageChanged', (e) => {
+        currentPageIndex = e.detail.pageIndex;
+        // Optionally reload track when page changes
+        // loadCurrentTrack();
+    });
+
+    updateGlobalButtonText();
+})();
+
+        class LogicalPagination {
+            constructor(defaultLang = 'km') {
+                this.currentPage = 0;
+                this.currentLang = defaultLang;
+                this.pages = document.querySelectorAll('.page');
+                this.totalPages = this.pages.length;
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+
+                this.isTransitioning = false;
+                this.init();
+            }
+
+            init() {
+                this.updateNavigation();
+                this.bindEvents();
+                this.handleKeyboard();
+                this.updateNavigationText();
+            }
+
+            bindEvents() {
+                this.prevBtn.addEventListener('click', () => this.goToPreviousPage());
+                this.nextBtn.addEventListener('click', () => this.goToNextPage());
+
+
+            }
+
+            handleKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    if (this.isTransitioning) return;
+                    switch(e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.goToNextPage();
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.goToPreviousPage();
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToPage(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToPage(this.totalPages - 1);
+                            break;
+                    }
+                });
+            }
+
+            updateNavigationText() {
+                const navTexts = {
+                    km: { prev: '←', next: '→' },
+                };
+                const texts = navTexts[this.currentLang];
+                this.prevBtn.textContent = texts.prev;
+                this.nextBtn.textContent = texts.next;
+            }
+
+            goToPage(pageIndex) {
+                // Validate page index and prevent concurrent transitions
+                if (pageIndex < 0 || pageIndex >= this.totalPages || pageIndex === this.currentPage || this.isTransitioning) {
+                    return;
+                }
+                
+                // Lock transitions
+                this.isTransitioning = true;
+                
+                // Store old page reference
+                const oldPageIndex = this.currentPage;
+                const isMovingForward = pageIndex > this.currentPage;
+                
+                // Update current page immediately
+                this.currentPage = pageIndex;
+                
+                // Step 1: Remove active state from old page (without transition)
+                this.pages[oldPageIndex].style.transition = 'none';
+                this.pages[oldPageIndex].classList.remove('active');
+                
+                if (isMovingForward) {
+                    this.pages[oldPageIndex].classList.add('prev');
+                } else {
+                    this.pages[oldPageIndex].classList.remove('prev');
+                }
+                
+                // Force reflow to ensure style changes are applied
+                void this.pages[oldPageIndex].offsetHeight;
+                
+                // Step 2: Prepare new page (without transition)
+                this.pages[this.currentPage].style.transition = 'none';
+                this.pages[this.currentPage].classList.remove('prev');
+                this.pages[this.currentPage].scrollTop = 0;
+                
+                // Force reflow again
+                void this.pages[this.currentPage].offsetHeight;
+                
+                // Step 3: Re-enable transitions after a small delay (iOS-friendly)
+                setTimeout(() => {
+                    // Re-enable transitions for both pages
+                    this.pages[oldPageIndex].style.transition = '';
+                    this.pages[this.currentPage].style.transition = '';
+                    
+                    // Force reflow before adding active class
+                    void this.pages[this.currentPage].offsetHeight;
+                    
+                    // Add active class to trigger transition
+                    this.pages[this.currentPage].classList.add('active');
+                    
+                    // Clean up all other pages
+                    this.pages.forEach((page, index) => {
+                        if (index !== this.currentPage && index !== oldPageIndex) {
+                            page.classList.remove('active', 'prev');
+                            page.style.transition = '';
+                        }
+                    });
+                    
+                    // Update navigation state
+                    this.updateNavigation();
+                    
+                    // Dispatch page change event
+                    try {
+                        document.dispatchEvent(new CustomEvent('pageChanged', { 
+                            detail: { pageIndex: this.currentPage } 
+                        }));
+                    } catch(e) {
+                        console.warn('pageChanged event failed:', e);
+                    }
+                    
+                    // Unlock transitions after animation completes
+                    setTimeout(() => {
+                        this.isTransitioning = false;
+                        
+                        // Final cleanup of old page
+                        this.pages[oldPageIndex].classList.remove('prev');
+                        this.pages[oldPageIndex].style.transition = '';
+                    }, 650); // Slightly longer than transition duration for safety
+                    
+                }, 20); // iOS-safe delay (~1-2 frames)
+            }
+
+            goToNextPage() {
+                if (this.currentPage < this.totalPages - 1) this.goToPage(this.currentPage + 1);
+            }
+
+            goToPreviousPage() {
+                if (this.currentPage > 0) this.goToPage(this.currentPage - 1);
+            }
+
+            updateNavigation() {
+                this.prevBtn.disabled = this.currentPage === 0;
+                this.nextBtn.disabled = this.currentPage === this.totalPages - 1;
+            }
+        }
+    </script>
+</body>
+</html>
