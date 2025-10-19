@@ -938,8 +938,6 @@ document.addEventListener('click', handlePlayClick, { passive: false });
             }
 
             updateLanguageDisplay() {
-                const allContent = document.querySelectorAll('.content[data-lang]');
-                allContent.forEach(content => content.classList.remove('active-lang'));
                 const currentLangContent = document.querySelectorAll(`.content[data-lang="${this.currentLang}"]`);
                 currentLangContent.forEach(content => content.classList.add('active-lang'));
             }
