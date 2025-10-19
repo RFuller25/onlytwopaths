@@ -1022,16 +1022,9 @@ document.addEventListener('click', handlePlayClick, { passive: false });
                     } catch(e) {
                         console.warn('pageChanged event failed:', e);
                     }
-                    
-                    // Unlock transitions after animation completes
-                    setTimeout(() => {
-                        this.isTransitioning = false;
-                        
-                        // Final cleanup of old page
-                        this.pages[oldPageIndex].classList.remove('prev');
-                        this.pages[oldPageIndex].style.transition = '';
-                    }, 650); // Slightly longer than transition duration for safety
-                    
+                    this.isTransitioning = false;
+                    this.pages[oldPageIndex].classList.remove('prev');
+                    this.pages[oldPageIndex].style.transition = '';                    
                 }, 20); // iOS-safe delay (~1-2 frames)
             }
 
