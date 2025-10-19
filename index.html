@@ -1158,6 +1158,25 @@ function getLangFromQuery() {
   return null; // fallback: don't override
 }
 
+function isIOS() {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  const maxTouch = navigator.maxTouchPoints || 0;
+
+  // Classic iOS (iPhone, iPod, older iPads)
+  const classicIOS = /\b(iPad|iPhone|iPod)\b/i.test(ua);
+
+  // iPadOS 13+ reports "MacIntel" but is touch-capable
+  const iPadOS = platform === "MacIntel" && maxTouch > 1;
+
+  // Some in-app browsers mask details; WebKit on iOS is universal
+  const webkitOnMobile =
+    /\bAppleWebKit\b/i.test(ua) &&
+    /\bMobile\b/i.test(ua) &&
+    !/\bAndroid\b/i.test(ua);
+
+  return classicIOS || iPadOS || webkitOnMobile;
+}
 
         class LogicalPagination {
             constructor(defaultLang = 'th') {
