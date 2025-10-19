@@ -1150,13 +1150,6 @@ document.addEventListener('click', handlePlayClick, { passive: false });
     updateGlobalButtonText();
 })();
 
-function getLangFromQuery() {
-  const params = new URLSearchParams(window.location.search);
-  const l = params.get("l");
-  if (l === "k") return "km"; // Khmer
-  if (l === "t") return "th"; // Thai
-  return null; // fallback: don't override
-}
 
 function isIOS() {
   const ua = navigator.userAgent || "";
@@ -1177,6 +1170,20 @@ function isIOS() {
 
   return classicIOS || iPadOS || webkitOnMobile;
 }
+
+function getLangFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const l = params.get("l");
+  
+  if (isIOS() && l) {
+    window.location.replace(`https://onlytwopaths.net/${l}/`)
+  }
+
+  if (l === "k") return "km"; // Khmer
+  if (l === "t") return "th"; // Thai
+  return null; // fallback: don't override
+}
+
 
         class LogicalPagination {
             constructor(defaultLang = 'th') {
@@ -1243,6 +1250,11 @@ function isIOS() {
                 this.langBtns.forEach(btn => {
                     btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
                 });
+
+                if (isIOS()) {
+                    window.location.replace(`https://onlytwopaths.net/${lang[0]}/`)
+                }
+
                 if (lang === 'km') {
                     document.title = 'មានផ្លូវតែពីរ';
                 } else {
