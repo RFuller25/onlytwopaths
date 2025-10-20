@@ -1015,7 +1015,6 @@ function getLangFromQuery() {
                 void this.pages[this.currentPage].offsetHeight;
                 
                 // Step 3: Re-enable transitions after a small delay (iOS-friendly)
-                setTimeout(() => {
                     // Re-enable transitions for both pages
                     this.pages[oldPageIndex].style.transition = '';
                     this.pages[this.currentPage].style.transition = '';
@@ -1032,7 +1031,6 @@ function getLangFromQuery() {
                             page.classList.remove('active', 'prev');
                             page.style.transition = '';
                         }
-                    });
                     
                     // Update navigation state
                     this.updateNavigation();
