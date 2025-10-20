@@ -1325,7 +1325,6 @@ function getLangFromQuery() {
                 void this.pages[this.currentPage].offsetHeight;
                 
                 // Step 3: Re-enable transitions after a small delay (iOS-friendly)
-                setTimeout(() => {
                     // Re-enable transitions for both pages
                     this.pages[oldPageIndex].style.transition = '';
                     this.pages[this.currentPage].style.transition = '';
@@ -1358,7 +1357,6 @@ function getLangFromQuery() {
                     this.isTransitioning = false;
                     this.pages[oldPageIndex].classList.remove('prev');
                     this.pages[oldPageIndex].style.transition = '';                    
-                }, 20); // iOS-safe delay (~1-2 frames)
             }
 
             goToNextPage() {
