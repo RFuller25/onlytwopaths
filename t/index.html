@@ -255,7 +255,7 @@
             opacity: 0.9;
         }
 
-        p { font-size: clamp(1.2rem, 2.7vw, 1.4rem); line-height: 1.8; margin-bottom: 1.05rem; text-align: justify; color: var(--text-color); }
+        p { font-size: 16pt; line-height: 1.8; margin-bottom: 1.05rem; text-align: justify; color: var(--text-color); }
 
         img { max-width: 90vw; max-height: 70vh; width: auto; height: auto; object-fit: scale-down; border-radius: 15px;
              transition: transform 0.3s ease;}
@@ -419,8 +419,9 @@
         font-size-adjust: 0.48; /* forces more consistent sizing with Thai text */
         }
 
-        [data-lang="th"] p {
-        font-family: 'Noto Sans Thai', sans-serif; /* pick a Thai-friendly font that normalizes numerals */
+        [data-lang="th"] p, h1, h2, h3 {
+            font-family: 'Noto Serif Thai', serif;
+            font-size: 16pt;
         }
 
         .hanging-indent {
@@ -439,6 +440,9 @@
 
     </style>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&display=swap" rel="stylesheet">
 
 </head>
 <body>
